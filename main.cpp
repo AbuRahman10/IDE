@@ -1,6 +1,7 @@
 #include <iostream>
-
+#include "SLR.h"
+#include "CFG.h"
 int main() {
-    std::cout << "Empty" << std::endl;
+
     return 0;
 }
