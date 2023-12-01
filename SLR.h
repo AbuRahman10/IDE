@@ -16,21 +16,24 @@ using I = vector<pair<production,int>>;
 class SLR : public CFG {
 private:
     vector<production> augmented_production;
-    vector<I> collectionI;
+    vector<I> goto_s;
     string StartSymbolSlr;
-
-
+    vector<vector<string>> I_vector;
+    I CL;
 public:
     SLR();
 
     SLR(const CFG& cfg);
-
 
     void closure();
 
     void variable_check(I& i0);
 
     bool production_checker(const string& head, I& i0);
+
+    void goTo(const I &random_I, string variable, int number);
+
+    void remaining_Variables(const I &random_I);
 
 };
 
