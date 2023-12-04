@@ -150,35 +150,95 @@ Token Lexer::lexIdentifierOrKeyword() {
 
 std::vector<Token> Lexer::tokenize() noexcept {
     std::vector<Token> tokens;
-    while (char_pointer < code.length()) {
-        const char current = code[char_pointer];
-        if (isspace(current)) {
-            if (current == '\n'){
-                tokens.emplace_back(Token::NEWLINE,"newline");
+    std::vector<std::string> check_main;
+    int counter = 0;
+    std::string word;
+    do {
+        if (isspace(code[counter])) {
+            if (word == "") {
+                counter++;
+                continue;
             }
-            char_pointer++;
-        }else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '/') {
-            skipSingleLineComment();
-            // multiline comments
-        } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '*') {
-            skipMultiLineComment();
-        } else if (isdigit(current)) {
-            tokens.push_back(lexNumber());
-        } else if (current == '\"') {
-            tokens.push_back(lexString());
-        } else if (current == '\'') {
-            tokens.push_back(lexCharacter());
-        } else if (isalpha(current) || current == '_') {
-            tokens.push_back(lexIdentifierOrKeyword());
-        }else{
-            tokens.push_back(lexOperatorOrPunctuation());
+            check_main.push_back(word);
+            word = "";
+            counter++;
+            continue;
+        }
+        if (code[counter] == '(' || code[counter] == ')' || code[counter] == '{' || code[counter] == '}') {
+            if (!word.empty()) {
+                check_main.push_back(word);
+                word = "";
+            }
+            word += code[counter];
+            check_main.push_back(word);
+            word = "";
+            counter++;
+            continue;
+        }
+        word += code[counter];
+        counter++;
+    } while (counter != code.length());
+
+    // if it has the main funtion;
+    if (this->has_main(check_main)) {
+        while (char_pointer < code.length()) {
+            const char current = code[char_pointer];
+            if (isspace(current)) {
+                if (current == '\n') {
+                    tokens.emplace_back(Token::NEWLINE, "newline");
+                }
+                char_pointer++;
+            } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '/') {
+                skipSingleLineComment();
+                // multiline comments
+            } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '*') {
+                skipMultiLineComment();
+            } else if (isdigit(current)) {
+                tokens.push_back(lexNumber());
+            } else if (current == '\"') {
+                tokens.push_back(lexString());
+            } else if (current == '\'') {
+                tokens.push_back(lexCharacter());
+            } else if (isalpha(current) || current == '_') {
+                tokens.push_back(lexIdentifierOrKeyword());
+            } else {
+                tokens.push_back(lexOperatorOrPunctuation());
+            }
+        }
+        tokens.emplace_back(Token::END_OF_FILE, "");
+        if (tokens[0].type == Token::END_OF_FILE && tokens.size() == 1) {
+            tokens.pop_back();
+            tokens.emplace_back(Token::ERROR, "no main function present");
+        }
+        return tokens;
+    } else {
+        tokens.emplace_back(Token::ERROR, "no main function present");
+        return tokens;
+    }
+}
+
+bool Lexer::has_main(std::vector<std::string>&possible_main){
+    std::vector<std::string> main_syntax = {"int","main","(",")","{","}"};
+    std::set<std::string> checked_elements;
+    int matched_element = 0;
+    for (int i = 0; i < possible_main.size(); ++i) {
+        std::string get_word = possible_main[i];
+        for (int j = 0; j < main_syntax.size(); ++j) {
+            std::string check = main_syntax[j];
+            if (main_syntax[j] == get_word){
+                checked_elements.insert(get_word);
+                matched_element++;
+                break;
+            }else{
+                continue;
+            }
         }
     }
-    tokens.emplace_back(Token::END_OF_FILE, "");
-    if (tokens[0].type == Token::END_OF_FILE && tokens.size() == 1){
-        tokens.pop_back();
-        tokens.emplace_back(Token::ERROR,"no main function present");
+    if (matched_element == main_syntax.size()+1){
+        return true;
+    }else{
+        return false;
     }
-    return tokens;
 }
+
 

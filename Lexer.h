@@ -17,7 +17,6 @@ struct Token {
     std::string word;
     // normal constructor
     Token(Type type, std::string  lexeme): type(type), word(std::move(lexeme)) {}
-    // constructor for keep tracking of line and column
 };
 
 class Lexer {
@@ -33,10 +32,12 @@ private:
     inline bool isKeyword(const std::string& str)const;
     inline void skipSingleLineComment();
     inline void skipMultiLineComment();
+    [[nodiscard]] bool has_main(std::vector<std::string>&possible_main);
 public:
     Lexer(std::string  source) : code(std::move(source)), char_pointer(0) {}
 
     [[nodiscard]] std::vector<Token>tokenize()noexcept;
+
 };
 
 
