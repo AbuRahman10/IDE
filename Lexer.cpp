@@ -205,7 +205,7 @@ std::vector<Token> Lexer::tokenize() noexcept {
                 tokens.push_back(lexOperatorOrPunctuation());
             }
         }
-        tokens.emplace_back(Token::END_OF_FILE, "");
+        tokens.emplace_back(Token::END_OF_FILE, "<EOS>");
         if (tokens[0].type == Token::END_OF_FILE && tokens.size() == 1) {
             tokens.pop_back();
             tokens.emplace_back(Token::ERROR, "no main function present");
@@ -234,7 +234,9 @@ bool Lexer::has_main(std::vector<std::string>&possible_main){
             }
         }
     }
-    if (matched_element == main_syntax.size()+1){
+    std::vector<std::string> compare_element;
+    std::copy(checked_elements.begin(),checked_elements.end(),std::back_inserter(compare_element));
+    if (compare_element.size() == main_syntax.size()){
         return true;
     }else{
         return false;
