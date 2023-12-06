@@ -9,10 +9,16 @@
 #include "CFG.h"
 #include "algorithm"
 #include "vector"
+#include "map"
+#include "iostream"
+#include "set"
 using namespace std;
 using production = pair<string,vector<string>>;
 //production gives the production rule and int is for the position of dot
 using I = vector<pair<production,int>>;
+//parsing table
+using action = map<string,string>;
+using go = map<string,int>;
 
 class SLR : public CFG {
 private:
@@ -20,13 +26,15 @@ private:
     int number_of_i = 0;
     vector<I> goto_s;
     string StartSymbolSlr;
-    //Collection of symbols which has not been implemented by goto
-    vector<vector<string>> I_vector;
-    vector<string> rem_variables;
     //closure
     I CL;
+    vector<pair<action,go>> parsing_table;
+    map<string,set<string>> follows;
+
+    //these variables are not part of the slr algo but they are here to help the implementation
+    vector<vector<string>> I_vector;
+    vector<string> rem_variables;
 public:
-    SLR();
 
     SLR(const CFG& cfg);
 
@@ -48,6 +56,11 @@ public:
 
     bool check_for_constructed_rules(const pair<production,int>  &check_i);
 
+    void creating_parsing_table();
+
+    int shift_check(const pair<production,int>& rule_to_check);
+
+    void createFollow(const string& variable);
 };
 
 

@@ -8,4 +8,5 @@ int main() {
     SLR slr(cfg);
     slr.closure();
     slr.goto_constructor();
+    slr.creating_parsing_table();
 }
