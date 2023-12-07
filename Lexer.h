@@ -32,11 +32,10 @@ private:
     inline bool isKeyword(const std::string& str)const;
     inline void skipSingleLineComment();
     inline void skipMultiLineComment();
-    [[nodiscard]] bool has_main(std::vector<std::string>&possible_main);
 public:
     Lexer(std::string  source) : code(std::move(source)), char_pointer(0) {}
 
-    [[nodiscard]] std::vector<Token>tokenize()noexcept;
+    [[nodiscard]] std::vector<Token>tokenize() noexcept;
 
 };
 
