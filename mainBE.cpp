@@ -9,4 +9,6 @@ int main() {
     slr.closure();
     slr.goto_constructor();
     slr.creating_parsing_table();
+    vector<string> input = {"id","*","id","+","id","$"};
+    cout << boolalpha << slr.slr_parsing(input);
 }

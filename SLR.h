@@ -12,6 +12,7 @@
 #include "map"
 #include "iostream"
 #include "set"
+#include "Lexer.h"
 using namespace std;
 using production = pair<string,vector<string>>;
 //production gives the production rule and int is for the position of dot
@@ -61,6 +62,8 @@ public:
     int shift_check(const pair<production,int>& rule_to_check);
 
     void createFollow(const string& variable);
+
+    bool slr_parsing(vector<string> &input);
 };
 
 

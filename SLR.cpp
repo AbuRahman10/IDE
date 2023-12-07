@@ -306,3 +306,45 @@ void SLR::createFollow(const string& variable) {
     }
 
 }
+
+bool SLR::slr_parsing(vector<string> &input) {
+
+
+    static pair<vector<string>,vector<string>> stack_value = {{"0"},input};
+    string ss = input[0];
+    string action = parsing_table[stoi(stack_value.first[stack_value.first.size()-1])].first[ss];
+
+    if (action == "accept") {
+        return true;
+    }
+    if (action[0] == 's') {
+        stack_value.first.push_back(*input.begin());
+        string temp;
+        for (int i = 1; i < action.size(); i++) {
+            temp += action[i];
+        }
+        stack_value.first.push_back(temp);
+        input.erase(input.begin());
+        stack_value.second.erase(stack_value.second.begin());
+        slr_parsing(input);
+    }
+    if (action[0] == 'r') {
+        string temp;
+        for (int i = 1; i < action.size(); i++) {
+            temp += action[i];
+        }
+        unsigned int length = 2 * this->getProductions()[stoi(temp)].second.size();
+        for (int i = 0; i < length; i++) {
+            stack_value.first.pop_back();
+        }
+        stack_value.first.push_back(this->getProductions()[stoi(temp)].first);
+        int index = stoi(stack_value.first[stack_value.first.size() - 2]);
+        stack_value.first.push_back(
+                to_string(parsing_table[index].second[stack_value.first[stack_value.first.size() - 1]]));
+        slr_parsing(input);
+
+    }
+    if (action.empty() or action == "0") {
+        return false;
+    }
+}
