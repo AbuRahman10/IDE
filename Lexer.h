@@ -15,21 +15,25 @@ struct Token {
     enum Type { DATATYPE, DECLARATION_NAME, VALUE, OPERATOR, PUNCTUATION, END_OF_FILE, ERROR,BRACKETS,PARENTHESIS,NEWLINE};
     Type type;
     std::string word;
+    int line,column;
     // normal constructor
     Token(Type type, std::string  lexeme): type(type), word(std::move(lexeme)) {}
+    // line / column constructor
+    Token(Type type, std::string word, int line, int column) : type(type), word(std::move(word)), line(line),column(column) {}
 };
 
 class Lexer {
 private:
     std::string code;
     size_t char_pointer;
-
+    int line = 0;
+    int column = 0;
     [[nodiscard]] Token lexNumber();
     [[nodiscard]] Token lexString();
     [[nodiscard]] Token lexCharacter();
     [[nodiscard]] Token lexOperatorOrPunctuation();
     [[nodiscard]] Token lexIdentifierOrKeyword();
-    inline bool isKeyword(const std::string& str)const;
+    inline bool isKeyword(const std::string& str) const;
     inline void skipSingleLineComment();
     inline void skipMultiLineComment();
 public:

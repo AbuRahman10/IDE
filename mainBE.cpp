@@ -16,7 +16,7 @@ int main() {
     Lexer tokenizer(code);
     vector<Token> our_tokens = tokenizer.tokenize();
     for (int i = 0; i < our_tokens.size(); ++i) {
-        cout << "Token: "<< to_string(our_tokens[i].type) << " Value: " << our_tokens[i].word << endl;
+        cout << "Token: "<< to_string(our_tokens[i].type) << " Value: " << our_tokens[i].word << " at line :"<<our_tokens[i].line<< " at column: "<<our_tokens[i].column<< endl;
     }
     return 0;
 }

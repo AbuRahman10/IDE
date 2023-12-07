@@ -25,19 +25,29 @@ Token Lexer::lexNumber() {
             number += code[char_pointer++];
         }
     }
-    return {Token::VALUE, number};
+    return {Token::VALUE, number,this->line,this->column};
 }
-
 Token Lexer::lexString() {
     std::string str;
     str += code[char_pointer++]; // Add opening quote
-
     while (char_pointer < code.length() && code[char_pointer] != '\"') {
         if (code[char_pointer] == '\\') { // Check for escape character
             char_pointer++; // Move to the character after the backslash
             if (char_pointer < code.length()) {
                 // Handle common escape sequences
                 switch (code[char_pointer]) {
+                    // carriage return
+                    case 'r': str += '\r'; break;
+                    // audible bell
+                    case 'a': str += '\a'; break;
+                    //form feed
+                    case 'f': str += '\f'; break;
+                    //vertical tab
+                    case 'v': str += '\v'; break;
+                    // backspace
+                    case 'b': str += '\b'; break;
+                    // null character
+                    case '0': str += '\0'; break;
                     // newline
                     case 'n': str += '\n'; break;
                         // tab
@@ -49,7 +59,7 @@ Token Lexer::lexString() {
                     default: str += code[char_pointer]; // niet gewenste chars as escape sequence
                 }
             } else {
-                return {Token::ERROR, "Incomplete escape sequence"};
+                return {Token::ERROR, "Incomplete escape sequence",this->line,this->column};
             }
         } else {
             str += code[char_pointer];
@@ -59,9 +69,9 @@ Token Lexer::lexString() {
 
     if (char_pointer < code.length() && code[char_pointer] == '\"') {
         str += code[char_pointer++];
-        return {Token::VALUE, str};
+        return {Token::VALUE, str,this->line,this->column};
     } else {
-        return {Token::ERROR, "Unclosed string literal"};
+        return {Token::ERROR, "Unclosed string literal",this->line,this->column};
     }
 }
 
@@ -74,9 +84,9 @@ Token Lexer::lexCharacter() {
     character += code[char_pointer++]; // Add closing quote
 
     if (character[character.length()-1] != '\''){
-        return {Token::ERROR,"Unclosed char!"};
+        return {Token::ERROR,"Unclosed char!",this->line,this->column};
     }
-    return {Token::VALUE, character};
+    return {Token::VALUE, character,this->line,this->column};
 }
 
 Token Lexer::lexOperatorOrPunctuation() {
@@ -86,27 +96,27 @@ Token Lexer::lexOperatorOrPunctuation() {
     // Check for multi-character operators
     if (char_pointer < code.length()) {
         char next = code[char_pointer];
-        if ((current == '<' && next == '=') ||(current == '>' && next == '=') ||(current == '&' && next == '&') ||(current == '|' && next == '|')||(current == '<' && next == '<')|| (current == '>'||next == '>')){
+        if ((current == '<' && next == '=') ||(current == '>' && next == '=') ||(current == '&' && next == '&') ||(current == '|' && next == '|')||(current == '<' && next == '<')|| (current == '>'||next == '>')||(current == '+'|| current == '-' || current == '*'|| current == '/'&& next == '=')){
             tokenValue += next;
             char_pointer++;  // Consume the next character as well
         }
     }
     // Determine the token type
-    if (tokenValue == "<=" || tokenValue == ">=" ||tokenValue == "&&" || tokenValue == "||") {
-        return {Token::OPERATOR, tokenValue};
+    if (tokenValue == "<=" || tokenValue == ">=") {
+        return {Token::OPERATOR, tokenValue,this->line,this->column};
     } else if (tokenValue == ";" || tokenValue == "," || tokenValue == ".") {
-        return {Token::PUNCTUATION, tokenValue};
+        return {Token::PUNCTUATION, tokenValue,this->line,this->column};
     } else if (tokenValue == "(" || tokenValue == ")") {
-        return {Token::BRACKETS, tokenValue};
+        return {Token::BRACKETS, tokenValue, this->line,this->column};
     } else if (tokenValue == "{" || tokenValue == "}") {
-        return {Token::PARENTHESIS, tokenValue};
+        return {Token::PARENTHESIS, tokenValue, this->line, this->column};
     } else {
-        return {Token::OPERATOR, tokenValue};  // Single char operator
+        return {Token::OPERATOR, tokenValue,this->line,this->column};  // Single char operator
     }
 }
 
 bool Lexer::isKeyword(const std::string& str)const {
-    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char", "void", "if", "else", "return","and","or","not"};
+    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char", "void", "if", "else", "return","and","or","not","const","virtual","override","noexcept","size_t","inline","constexpr","class","struct","long","unsigned","signed","union"};
     return keywords.find(str) != keywords.end();
 }
 
@@ -137,11 +147,11 @@ Token Lexer::lexIdentifierOrKeyword() {
     }
     // datatype
     if (isKeyword(identifier)) {
-        return {Token::DATATYPE, identifier};
+        return {Token::DATATYPE, identifier,this->line,this->column};
     }
         // aka variable naam
     else {
-        return {Token::DECLARATION_NAME, identifier};
+        return {Token::DECLARATION_NAME, identifier,this->line,this->column};
     }
 }
 
@@ -151,32 +161,45 @@ std::vector<Token> Lexer::tokenize() noexcept {
         const char current = code[char_pointer];
         if (isspace(current)) {
             if (current == '\n') {
-                tokens.emplace_back(Token::NEWLINE, "newline");
+                tokens.emplace_back(Token::NEWLINE, "newline",this->line,this->column);
+                this->line++;
+                this->column = 0;
+                char_pointer++;
+                continue;
+            }else{
+                // it's a space
+                char_pointer++;
+                this->column++;
             }
-            char_pointer++;
         } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '/') {
             skipSingleLineComment();
+            this->column++;
             // multiline comments
         } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '*') {
             skipMultiLineComment();
+            this->column++;
         } else if (isdigit(current)) {
             tokens.push_back(lexNumber());
+            this->column++;
         } else if (current == '\"') {
             tokens.push_back(lexString());
+            this->column++;
         } else if (current == '\'') {
             tokens.push_back(lexCharacter());
+            this->column++;
         } else if (isalpha(current) || current == '_') {
             tokens.push_back(lexIdentifierOrKeyword());
+            this->column++;
         } else {
             tokens.push_back(lexOperatorOrPunctuation());
+            this->column++;
         }
     }
-    tokens.emplace_back(Token::END_OF_FILE, "<EOS>");
+    tokens.emplace_back(Token::END_OF_FILE, "<EOS>",this->line,this->column);
+    // we have nothing in our file to compile even with all the comments it's going to skip everything! so ERROR !
     if (tokens[0].type == Token::END_OF_FILE && tokens.size() == 1) {
         tokens.pop_back();
-        tokens.emplace_back(Token::ERROR, "no main function present");
+        tokens.emplace_back(Token::ERROR, "Empty file");
     }
     return tokens;
 }
-
-
