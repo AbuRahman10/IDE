@@ -13,6 +13,26 @@
 #include <set>
 struct Token {
     enum Type { DATATYPE, DECLARATION_NAME, VALUE, OPERATOR, PUNCTUATION, END_OF_FILE, ERROR,BRACKETS,PARENTHESIS,NEWLINE};
+    std::string typeToString() const{
+        switch (this->type) {
+            case DATATYPE:
+                return "D";
+            case DECLARATION_NAME:
+                return "N";
+            case VALUE:
+                return "V";
+            case OPERATOR:
+                return "O";
+            case PUNCTUATION:
+                return "P";
+            case END_OF_FILE:
+                return "E";
+            case ERROR:
+                return "X";
+            default:
+                return "false";
+        }
+    }
     Type type;
     std::string word;
     int line,column;

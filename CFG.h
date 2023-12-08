@@ -10,7 +10,10 @@
 #include "algorithm"
 #include "json.hpp"
 #include "fstream"
+#include "Lexer.h"
+
 using json = nlohmann::json;
+using namespace std;
 
 class CFG {
 private:
@@ -41,6 +44,8 @@ public:
     const std::vector<std::string> &getTerminals() const;
 
     void print();
+
+    bool parse(vector<Token> &tokens);
 };
 
 

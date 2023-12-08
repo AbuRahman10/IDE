@@ -3,6 +3,7 @@
 //
 
 #include "CFG.h"
+#include "SLR.h"
 
 CFG::CFG(const std::string& filename){
     std::ifstream input(filename);
@@ -90,4 +91,22 @@ const std::vector<std::string> &CFG::getVariables() const {
 
 const std::vector<std::string> &CFG::getTerminals() const {
     return terminals;
+}
+
+bool CFG::parse(vector<Token> &tokens)
+{
+    CFG cfg("grammar.json");
+    vector<string> input;
+    for (Token token : tokens)
+    {
+        input.push_back(token.typeToString());
+    }
+    input.push_back("$");
+    SLR parser(cfg);
+    parser.closure();
+    parser.goto_constructor();
+    parser.creating_parsing_table();
+    bool accept = parser.slr_parsing(input);
+
+    return accept;
 }

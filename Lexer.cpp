@@ -116,7 +116,7 @@ Token Lexer::lexOperatorOrPunctuation() {
 }
 
 bool Lexer::isKeyword(const std::string& str)const {
-    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char", "void", "if", "else", "return","and","or","not","const","virtual","override","noexcept","size_t","inline","constexpr","class","struct","long","unsigned","signed","union"};
+    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char"};
     return keywords.find(str) != keywords.end();
 }
 
@@ -195,8 +195,8 @@ std::vector<Token> Lexer::tokenize() noexcept {
             this->column++;
         }
     }
-    tokens.emplace_back(Token::END_OF_FILE, "<EOS>",this->line,this->column);
-    // we have nothing in our file to compile even with all the comments it's going to skip everything! so ERROR !
+    /*tokens.emplace_back(Token::END_OF_FILE, "<EOS>",this->line,this->column);
+    // we have nothing in our file to compile even with all the comments it's going to skip everything! so ERROR !*/
     if (tokens[0].type == Token::END_OF_FILE && tokens.size() == 1) {
         tokens.pop_back();
         tokens.emplace_back(Token::ERROR, "Empty file");

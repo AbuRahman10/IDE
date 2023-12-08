@@ -4,7 +4,7 @@
 #include <sstream>
 #include "Lexer.h"
 int main() {
-/*    CFG cfg("package.json");
+/*    CFG cfg("grammar.json");
     SLR slr(cfg);
     slr.closure();
     slr.goto_constructor();

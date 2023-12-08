@@ -4,7 +4,7 @@
 
 #include "SLR.h"
 
-SLR::SLR(const CFG &cfg) {
+SLR::SLR(CFG &cfg) {
     this->setV(cfg.getVariables());
     this->setP(cfg.getProductions());
     this->setS(cfg.getStartSymbol());
@@ -260,6 +260,7 @@ int SLR::shift_check(const pair<production,int>& rule_to_check) {
             }
         }
     }
+    return 0;
 }
 
 //creates follow for grammar(rules for epsilon is not implemented, will implement it later if necessary)
@@ -309,13 +310,13 @@ void SLR::createFollow(const string& variable) {
 
 bool SLR::slr_parsing(vector<string> &input) {
 
-
+    static bool accept = false;
     static pair<vector<string>,vector<string>> stack_value = {{"0"},input};
     string ss = input[0];
     string action = parsing_table[stoi(stack_value.first[stack_value.first.size()-1])].first[ss];
 
     if (action == "accept") {
-        return true;
+        accept = true;
     }
     if (action[0] == 's') {
         stack_value.first.push_back(*input.begin());
@@ -345,6 +346,7 @@ bool SLR::slr_parsing(vector<string> &input) {
 
     }
     if (action.empty() or action == "0") {
-        return false;
+        accept = false;
     }
+    return accept;
 }

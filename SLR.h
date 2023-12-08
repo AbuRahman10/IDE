@@ -37,7 +37,7 @@ private:
     vector<string> rem_variables;
 public:
 
-    SLR(const CFG& cfg);
+    SLR(CFG& cfg);
 
     void closure();
 

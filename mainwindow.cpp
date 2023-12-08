@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-
+#include "Lexer.h"
 #include <iostream>
+#include "CFG.h"
+#include "SLR.h"
 
 using namespace std;
 
@@ -31,20 +33,23 @@ void MainWindow::inputtest()
     string input = Qinput.toStdString();
     if (ui->RUN->isChecked())
     {
+        Lexer lexer(input);
+        auto get_tokens = lexer.tokenize();
+
+        CFG cfg;
+        bool accept = cfg.parse(get_tokens);
+
         string exit0 = "Process finished with exit code 0";
         string exit1 = "Process finished with exit code 1";
         ui->console->clear();
-
         QTextCursor cursor(ui->editor->document());
         cursor.movePosition(QTextCursor::End);
-        if (input == "int")
+        if (accept)
         {
             ui->console->clear();
             ui->console->insertPlainText(QString::fromStdString(exit0));
-
             ui->editor->clear();
-            cursor.insertText("int");
-
+            cursor.insertText(Qinput);
             // Dynamically modify the stylesheet to set the color to green
             QString styleSheet = ui->editor->styleSheet();
             styleSheet += " QTextEdit { color: green; }";
