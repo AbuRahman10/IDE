@@ -148,9 +148,9 @@ void SLR::i_maker(const I &i, const string& symbol) {
 
 //recursive closure function, if we can apply closue on a rule then this function does it
 void SLR::closure_checker(I &new_I, const string& head) {
-    for(const auto& closure: CL){
-        if(closure.first.first == head){
-            new_I.push_back(closure);
+    for(const auto& closure : augmented_production){
+        if(closure.first == head){
+            new_I.emplace_back(closure,0);
         }
     }
     rem_variables.push_back(head);
@@ -308,10 +308,9 @@ void SLR::createFollow(const string& variable) {
 
 }
 
-bool SLR::slr_parsing(vector<string> &input) {
+bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> &stack_value) {
 
     static bool accept = false;
-    static pair<vector<string>,vector<string>> stack_value = {{"0"},input};
     string ss = input[0];
     string action = parsing_table[stoi(stack_value.first[stack_value.first.size()-1])].first[ss];
 
@@ -327,7 +326,7 @@ bool SLR::slr_parsing(vector<string> &input) {
         stack_value.first.push_back(temp);
         input.erase(input.begin());
         stack_value.second.erase(stack_value.second.begin());
-        slr_parsing(input);
+        slr_parsing(input,stack_value);
     }
     if (action[0] == 'r') {
         string temp;
@@ -342,7 +341,7 @@ bool SLR::slr_parsing(vector<string> &input) {
         int index = stoi(stack_value.first[stack_value.first.size() - 2]);
         stack_value.first.push_back(
                 to_string(parsing_table[index].second[stack_value.first[stack_value.first.size() - 1]]));
-        slr_parsing(input);
+        slr_parsing(input,stack_value);
 
     }
     if (action.empty() or action == "0") {

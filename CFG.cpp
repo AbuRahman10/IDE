@@ -106,7 +106,8 @@ bool CFG::parse(vector<Token> &tokens)
     parser.closure();
     parser.goto_constructor();
     parser.creating_parsing_table();
-    bool accept = parser.slr_parsing(input);
+    pair<vector<string>,vector<string>> stack_value = {{"0"},input};
+    bool accept = parser.slr_parsing(input,stack_value);
 
     return accept;
 }
