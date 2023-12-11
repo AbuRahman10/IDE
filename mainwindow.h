@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextEdit>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,6 +18,7 @@ public:
     ~MainWindow();
 private slots:
     void inputtest();
+    void textchanged(QTextEdit *editor);
     void onButtonClicked();
 private:
     Ui::MainWindow *ui;

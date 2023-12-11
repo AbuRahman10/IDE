@@ -7,8 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>1019</width>
-    <height>621</height>
+    <height>643</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Fira Code</family>
+    <pointsize>11</pointsize>
+    <bold>true</bold>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -16,24 +23,25 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <property name="animated">
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
    <widget class="QTextEdit" name="editor">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>50</y>
+      <y>20</y>
       <width>931</width>
-      <height>351</height>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QTextEdit {
@@ -52,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>410</y>
+      <y>430</y>
       <width>931</width>
       <height>161</height>
      </rect>
@@ -74,7 +82,7 @@
     <property name="geometry">
      <rect>
       <x>970</x>
-      <y>10</y>
+      <y>20</y>
       <width>41</width>
       <height>29</height>
      </rect>
@@ -104,18 +112,649 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>-10</x>
+      <y>-10</y>
+      <width>1031</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+      <underline>false</underline>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">Line
+{
+	rgb(198, 142, 0)
+}</string>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>3</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>60</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>100</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>140</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>180</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_6">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>220</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_7">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>260</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_8">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>300</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_9">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>340</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="editor_10">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>380</y>
+      <width>931</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>-1</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    font-family: 'Fira Code', monospace;
+    font-size: 17px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    background-color: #282a36; /* Dracula background color */
+    color: #ba8602; /* Dracula text color */
+}</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>3</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>4</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>5</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>6</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>7</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>300</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>8</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>16</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>9</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>380</y>
+      <width>21</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Fira Code</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(167, 125, 0);
+font: 700 11pt &quot;Fira Code&quot;;</string>
+    </property>
+    <property name="text">
+     <string>10</string>
+    </property>
+   </widget>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>1019</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Fira Code</family>
+     <pointsize>-1</pointsize>
+     <bold>true</bold>
+     <underline>false</underline>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenuBar {
+	background-color: rgb(49, 8, 74);
+	font-family: 'Fira Code', monospace;
+    font-size: 15px; /* Adjust the font size as needed */
+    line-height: 1.5; /* Adjust the line height for better readability */
+    color: #ba8602; /* Dracula text color */
+}</string>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="font">
+     <font>
+      <family>Fira Code Medium</family>
+     </font>
+    </property>
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="OpenFile"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Project"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Info</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="separator"/>
+    <addaction name="actionRedo"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <action name="OpenFile">
+   <property name="text">
+    <string>New Project</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionSave_Project">
+   <property name="text">
+    <string>Save Project</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
