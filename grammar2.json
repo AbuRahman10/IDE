@@ -1,0 +1,20 @@
+{
+  "Variables": ["S","P","A","NUM","KEYBOARD","C","AP","STR","CHR","INTEGER","B","O","BV",""],
+  "Terminals": ["string","char","int","bool","P",";","=","[0-9]+","[a-zA-Z0-9]","[a-zA-Z0-9][a-zA-Z0-9]*","'","\""],
+  "Productions": [
+    {"head": "S", "body": ["STR"]}, {"head": "S", "body": ["CHR"]}, {"head": "S", "body": ["INTEGER"]},
+    {"head": "P", "body": [";"]},
+    {"head": "A", "body": ["\""]},
+    {"head": "AP", "body": ["'"]},
+    {"head": "BV", "body": ["true"]}, {"head": "BV", "body": ["false"]},
+    {"head": "O", "body": ["="]},
+    {"head": "STR", "body": ["string","N","P"]}, {"head": "STR", "body": ["string","N","O","A","keyboard","A","P"]},
+    {"head": "CHR", "body": ["char","N","P"]}, {"head": "CHR", "body": ["char","N","O","AP","C","AP","P"]},
+    {"head": "INTEGER", "body": ["int","N","O","NUM","P"]}, {"head": "INTEGER", "body": ["int","N","P"]},
+    {"head": "B", "body": ["bool","N","O","BV","P"]}, {"head": "B", "body": ["bool","N","P"]},
+    {"head": "KEYBOARD", "body": ["[a-zA-Z0-9][a-zA-Z0-9]*"]},
+    {"head": "NUM", "body": ["[0-9]+"]},
+    {"head": "C", "body": ["[a-zA-Z0-9]"]}, {"head": "C", "body": ["NUM"]}
+  ],
+  "Start": "S"
+}
