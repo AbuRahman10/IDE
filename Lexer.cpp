@@ -7,10 +7,16 @@
 Token Lexer::lexNumber() {
     std::string number;
     bool hasDecimalPoint = false;
+
+    // Handle negative numbers
+    if (code[char_pointer] == '-' && isdigit(code[char_pointer + 1])) {
+        number += code[char_pointer++]; // Add '-' to number
+    }
+
     // Identify the decimal point
-    while (isdigit(code[char_pointer]) ||(!hasDecimalPoint && code[char_pointer] == '.')) {
+    while (isdigit(code[char_pointer]) || (!hasDecimalPoint && code[char_pointer] == '.')) {
         if (code[char_pointer] == '.') {
-            hasDecimalPoint = true; // We have a decimal point here in the numbers value
+            hasDecimalPoint = true; // Decimal point in the number
         }
         number += code[char_pointer++];
     }
@@ -25,8 +31,10 @@ Token Lexer::lexNumber() {
             number += code[char_pointer++];
         }
     }
-    return {Token::VALUE, number,this->line,this->column};
+
+    return {Token::VALUE, number, this->line, this->column};
 }
+
 Token Lexer::lexString() {
     std::string str;
     str += code[char_pointer++]; // Add opening quote
@@ -90,28 +98,43 @@ Token Lexer::lexCharacter() {
 }
 
 Token Lexer::lexOperatorOrPunctuation() {
-    char current = code[char_pointer++];
+    char current = code[char_pointer];
     std::string tokenValue(1, current);
+
+    // Check for minus sign before a number (this is for signed integers!!!!)
+    if (current == '-' && isdigit(code[char_pointer + 1])) {
+        char_pointer++;
+        return lexNumber();
+    }
+
+    char_pointer++; // Increment char_pointer after the check
 
     // Check for multi-character operators
     if (char_pointer < code.length()) {
         char next = code[char_pointer];
-        if ((current == '<' && next == '=') ||(current == '>' && next == '=') ||(current == '&' && next == '&') ||(current == '|' && next == '|')||(current == '<' && next == '<')|| (current == '>'||next == '>')||(current == '+'|| current == '-' || current == '*'|| current == '/'&& next == '=')){
+        // Check for multi-character operators (like <=, >=, etc.)
+        if ((current == '<' && next == '=') || (current == '>' && next == '=') ||
+            (current == '&' && next == '&') || (current == '|' && next == '|') ||
+            (current == '<' && next == '<') || (current == '>' && next == '>') ||
+            (current == '+' || current == '-' || current == '*' || current == '/' && next == '=')) {
             tokenValue += next;
-            char_pointer++;  // Consume the next character as well
+            char_pointer++; // Consume the next character as well
         }
     }
+
     // Determine the token type
-    if (tokenValue == "<=" || tokenValue == ">=") {
-        return {Token::OPERATOR, tokenValue,this->line,this->column};
+    if (tokenValue == "<=" || tokenValue == ">=" || tokenValue == "&&" || tokenValue == "||" ||
+        tokenValue == "<<" || tokenValue == ">>" || tokenValue == "+=" || tokenValue == "-=" ||
+        tokenValue == "*=" || tokenValue == "/=") {
+        return {Token::OPERATOR, tokenValue, this->line, this->column};
     } else if (tokenValue == ";" || tokenValue == "," || tokenValue == ".") {
-        return {Token::PUNCTUATION, tokenValue,this->line,this->column};
+        return {Token::PUNCTUATION, tokenValue, this->line, this->column};
     } else if (tokenValue == "(" || tokenValue == ")") {
-        return {Token::BRACKETS, tokenValue, this->line,this->column};
+        return {Token::BRACKETS, tokenValue, this->line, this->column};
     } else if (tokenValue == "{" || tokenValue == "}") {
         return {Token::PARENTHESIS, tokenValue, this->line, this->column};
     } else {
-        return {Token::OPERATOR, tokenValue,this->line,this->column};  // Single char operator
+        return {Token::OPERATOR, tokenValue, this->line, this->column}; // Single char operator
     }
 }
 

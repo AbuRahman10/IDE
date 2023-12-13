@@ -9,6 +9,7 @@
     {"head": "DECLARATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*"]},
     {"head": "INITIALISATION", "body": ["string","[a-zA-Z][a-zA-Z0-9]*","=","\"[a-zA-Z0-9]*\""]},
     {"head": "INITIALISATION", "body": ["int","[a-zA-Z][a-zA-Z0-9]*","=","[0-9]+"]},
+    {"head": "INITIALISATION", "body": ["int","[a-zA-Z][a-zA-Z0-9]*","=","-[0-9]+"]},
     {"head": "INITIALISATION", "body": ["char","[a-zA-Z][a-zA-Z0-9]*","=","'[a-zA-Z0-9]'"]},
     {"head": "INITIALISATION", "body": ["char","[a-zA-Z][a-zA-Z0-9]*","=","'[0-9]+'"]},
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*","=","true"]},
