@@ -11,6 +11,7 @@
 #include <QTextCursor>
 #include "Lexer.h"
 #include "CFG.h"
+#include "message.h"
 
 using namespace std;
 
@@ -19,10 +20,36 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ///////// EDITORS /////////
+    editors.push_back(ui->editor);
+    editors.push_back(ui->editor_2);
+    editors.push_back(ui->editor_3);
+    editors.push_back(ui->editor_4);
+    editors.push_back(ui->editor_5);
+    editors.push_back(ui->editor_6);
+    editors.push_back(ui->editor_7);
+    editors.push_back(ui->editor_8);
+    editors.push_back(ui->editor_9);
+    editors.push_back(ui->editor_10);
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::inputtest);
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+    ///////// LIVE EDITOR CHECK FOR ONE LINE /////////
+    for (QTextEdit *editor : editors)
+    {
+        connect(editor, &QTextEdit::textChanged, [=]() {oneLine(editor);});
+//        ///////// LIVE COLOR MATCHING /////////
+//        connect(editor, &QTextEdit::textChanged, [=]()
+//        {
+//            if (editor->toPlainText().toStdString() == "int")
+//            {
+//                QString styleSheet = editor->styleSheet();
+//                styleSheet += " QTextEdit { color: blue; }";
+//                editor->setStyleSheet(styleSheet);
+//            }
+//        });
+    }
     this->setWindowTitle("IDE");
-    setWindowIcon(QIcon("C:/Users/aboba/Downloads/jetbrains-space-icon-logo-69559658A8-seeklogo.com.png"));
+    setWindowIcon(QIcon("logo.png"));
     this->setStyleSheet("background-color: #49006d;");
 }
 
@@ -39,18 +66,6 @@ void MainWindow::onButtonClicked()
 
 void MainWindow::inputtest()
 {
-    ///////// EDITORS /////////
-    vector<QTextEdit*> editors;
-    editors.push_back(ui->editor);
-    editors.push_back(ui->editor_2);
-    editors.push_back(ui->editor_3);
-    editors.push_back(ui->editor_4);
-    editors.push_back(ui->editor_5);
-    editors.push_back(ui->editor_6);
-    editors.push_back(ui->editor_7);
-    editors.push_back(ui->editor_8);
-    editors.push_back(ui->editor_9);
-    editors.push_back(ui->editor_10);
     // EXIT CODES
     QString exit0 = "Process finished with exit code 0";
     QString exit1 = "Process finished with exit code 1";
@@ -115,7 +130,7 @@ void MainWindow::inputtest()
                 editors[i]->setStyleSheet(styleSheet);
             }
         }
-        ///////// LIVE EDITOR /////////
+        ///////// LIVE EDITOR FONT CHANGE/////////
         for (QTextEdit *editor : editors)
         {
             connect(editor, &QTextEdit::textChanged, [=]() {textchanged(editor);});
@@ -125,11 +140,41 @@ void MainWindow::inputtest()
 
 void MainWindow::textchanged(QTextEdit *editor)
 {
+    disconnect(editor, &QTextEdit::textChanged, 0, 0);
+    /////// REMOVE UNDERLINE ////////
+    QTextCursor cursor(editor->document());
+    QTextCharFormat format;
+    format.setUnderlineStyle(QTextCharFormat::NoUnderline);
+    cursor.setPosition(0);
+    cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+    cursor.mergeCharFormat(format);
     /////// INPUT ////////
     QString Qinput = editor->toPlainText();
     string input = Qinput.toStdString();
+    editor->clear();
+    editor->insertPlainText(QString::fromStdString(input));
     /////// DEFAULT FONT ////////
     QString styleSheet = "QTextEdit {font-family: 'Fira Code', monospace;font-size: 17px; line-height: 1.5; background-color: #282a36; color: #ba8602; }";
     editor->setStyleSheet(styleSheet);
     return;
+}
+
+void MainWindow::oneLine(QTextEdit *editor)
+{
+    QString qin = editor->toPlainText();
+    string in = qin.toStdString();
+    string newInput;
+    string msg = "Only 1 line is accepted as an input!         ";
+    QString Qmsg = QString::fromStdString(msg);
+    for (char ch : in)
+    {
+        if (ch == '\n')
+        {
+            message(Qmsg);
+            editor->clear();
+            editor->insertPlainText(QString::fromStdString(newInput));
+            return;
+        }
+        newInput += ch;
+    }
 }

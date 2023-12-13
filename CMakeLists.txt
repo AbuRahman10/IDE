@@ -29,7 +29,9 @@ set(PROJECT_SOURCES
         Lexer.h
         Lexer.cpp
         SLR.cpp
-        CFG.cpp)
+        CFG.cpp
+        message.cpp
+        message.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(IDE_GUI

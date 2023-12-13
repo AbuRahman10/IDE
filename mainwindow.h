@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QTextEdit>
+#include "iostream"
+#include "vector"
 
+using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,9 +21,11 @@ public:
     ~MainWindow();
 private slots:
     void inputtest();
-    void textchanged(QTextEdit *editor);
     void onButtonClicked();
+    void textchanged(QTextEdit *editor);
+    void oneLine(QTextEdit *editor);
 private:
     Ui::MainWindow *ui;
+    vector<QTextEdit*> editors;
 };
 #endif // MAINWINDOW_H
