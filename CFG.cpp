@@ -95,22 +95,59 @@ const std::vector<std::string> &CFG::getTerminals() const {
 
 bool CFG::parse(vector<Token> &tokens)
 {
-    CFG cfg("grammar.json");
-    vector<string> input;
-    for (Token token : tokens)
-    {
-        input.push_back(token.typeToString());
+    if(tokens.empty()){
+        return true;
     }
-    input.push_back("$");
+    CFG cfg("grammar_works.json");
+    vector<string> input;
+    string dataType;
+    input.reserve(tokens.size());
+    regex identifier("[a-zA-Z][a-zA-Z0-9]*");
+    regex integer("[0-9]+");
+    regex str("\"[a-zA-Z0-9]*\"");
+    regex ch("'[a-zA-Z0-9]'");
+    regex ch1("'[0-9]+'");
+    for (const Token& token : tokens)
+    {
+        if(token.typeToString() == "D"){
+            dataType = token.word;
+        }
+        if(token.typeToString() == "N"){
+            std::regex pattern("[a-zA-Z][a-zA-Z0-9]*");
+            if(regex_match(token.word,pattern)){
+                input.emplace_back("[a-zA-Z][a-zA-Z0-9]*");
+            } else{
+                input.emplace_back(token.word);
+            }
+        } else if(token.typeToString() == "V"){
+            if(dataType == "int"){
+                if(regex_match(token.word,integer)){
+                    input.emplace_back("[0-9]+");
+                }
+            }else if(dataType == "string"){
+                if(regex_match(token.word,str) || token.word.empty()){
+                    input.emplace_back("\"[a-zA-Z0-9]*\"");
+                }
+            } else if(dataType == "char"){
+                if(regex_match(token.word,ch)){
+                    input.emplace_back("'[a-zA-Z0-9]'");
+                }else if(regex_match(token.word,ch1)){
+                    input.emplace_back("'[0-9]+'");
+                }
+            } else{
+                input.push_back(token.word);
+            }
+        }
+        else{
+            input.push_back(token.word);
+        }
+    }
+    input.emplace_back("$");
     SLR parser(cfg);
     parser.closure();
     parser.goto_constructor();
     parser.creating_parsing_table();
     pair<vector<string>,vector<string>> stack_value = {{"0"},input};
-    if (input.empty())
-    {
-        return true;
-    }
     bool accept = parser.slr_parsing(input,stack_value);
     return accept;
 }

@@ -12,6 +12,14 @@ SLR::SLR(CFG &cfg) {
     augmented_production = this->getProductions();
     augmented_production.push_back({this->getStartSymbol()+"'",{this->getStartSymbol()}});
     StartSymbolSlr = this->getStartSymbol()+"'";
+    //first terminal
+    for(const auto &f : this->getTerminals()){
+        first[f] = {f};
+    }
+    //variables
+    for(const auto &f : this->getVariables()){
+        createFirst(f);
+    }
     //create empty set for follow
     for(const auto &vars : this->getVariables()){
         if(vars == this->getStartSymbol()){
@@ -21,8 +29,13 @@ SLR::SLR(CFG &cfg) {
         }
     }
     //create follow
-    for(const auto &vars : this->getVariables()){
-        createFollow(vars);
+    for(const auto& prod : this->getProductions()){
+        for(const auto& body : prod.second){
+            auto it = find(this->getVariables().begin(), this->getVariables().end(), body);
+            if(it != this->getVariables().end()){
+                createFollow(body);
+            }
+        }
     }
 }
 
@@ -43,29 +56,20 @@ void SLR::closure() {
 
 //helping function closure
 void SLR::variable_check(I &i0) {
-    for(auto i : i0){
-        auto it = find(this->getVariables().begin(), this->getVariables().end(), i.first.second[i.second]);
-        if (it != this->getVariables().end()) {
-            if (!production_checker(*it, i0)){
-                for(const auto& k : augmented_production){
-                    if(k.first == *it){
-                        i0.emplace_back(k, 0);
-                    }
+    vector<string> heads;
+    for(int i = 0; i < i0.size(); i++){
+        auto it = find(this->getVariables().begin(), this->getVariables().end(), i0[i].first.second[i0[i].second]);
+        auto h = find(heads.begin(),heads.end(),i0[i].first.second[i0[i].second]);
+        if (it != this->getVariables().end() && h == heads.end()) {
+            for(const auto& k : augmented_production){
+                if(k.first == *it){
+                    i0.emplace_back(k, 0);
                 }
-                variable_check(i0);
             }
+            heads.push_back(*it);
+            i = 0;
         }
     }
-}
-
-//checks if the parameter head is in i0(also a helping function for closure)
-bool SLR::production_checker(const string& head, I &i0) {
-    for(const auto& i : i0) {
-        if (i.first.first == head) {
-            return true;
-        }
-    }
-    return false;
 }
 
 //-------------------- implementations of goto functions------------------------------------
@@ -263,50 +267,7 @@ int SLR::shift_check(const pair<production,int>& rule_to_check) {
     return 0;
 }
 
-//creates follow for grammar(rules for epsilon is not implemented, will implement it later if necessary)
-void SLR::createFollow(const string& variable) {
-    static map<string,bool> new_terminal;
-    //set all variables in new_terminal to false
-    for(auto& vars : this->getVariables()){
-        new_terminal[vars] = false;
-    }
-    //terminals
-    for(const auto &rule : this->getProductions()){
-        for(int i = 0; i < rule.second.size(); i++){
-            if(rule.second[i] == variable && i != rule.second.size()-1){
-                auto it = find(this->getTerminals().begin(), this->getTerminals().end(), rule.second[i+1]);
-                if(it != this->getTerminals().end()){
-                    follows[variable].insert(*it);
-                    new_terminal[variable] = true;
-                }
-            }
-        }
-    }
-    //variable
-    for(const auto &rule : this->getProductions()){
-        for(int i = 0; i < rule.second.size(); i++){
-            if(i == rule.second.size()-1 && rule.second[i] == variable){
-                for(const auto &follow_var : follows[rule.first]){
-                    follows[variable].insert(follow_var);
-                    new_terminal[variable] = true;
-                }
-            }
-        }
-    }
-    //check if head has new terminals && use recursion
-    for(const auto &vars : this->getVariables()){
-        for(const auto &rule : this->getProductions()){
-            for(int i = 0; i < rule.second.size(); i++){
-                if(i == rule.second.size()-1 && rule.second[i] == vars){
-                    if(new_terminal[rule.first]){
-                        createFollow(vars);
-                    }
-                }
-            }
-        }
-    }
 
-}
 
 bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> &stack_value) {
 
@@ -348,4 +309,106 @@ bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> 
         accept = false;
     }
     return accept;
+}
+
+void SLR::createFirst(const string& symbol) {
+    //first epsilon
+    for(const auto &prod : this->getProductions()){
+        //if head is symbol and body is epsilon , add epsilon to first
+        if(prod.first == symbol){
+            for(const auto &s : prod.second){
+                if(s.empty()){
+                    first[symbol] = {""};
+                }
+            }
+        }
+    }
+    //third rule
+    for(const auto &prod : this->getProductions()){
+        if(prod.first == symbol){
+            unsigned int epsilon_counter = 0;
+            for(const auto &body : prod.second){
+                //to check if y1 has epsilon as rule
+                bool epsilon = false;
+                if(!body.empty()){
+                    //loop through first of body and add it to prod.first
+                    if(body != symbol){
+                        createFirst(body);
+                    }
+                    for(const auto &f : first[body]){
+                        if(f.empty()){
+                            epsilon = true;
+                            epsilon_counter++;
+                        } else{
+                            first[prod.first].insert(f);
+                        }
+                    }
+                }
+                if(!epsilon){
+                    break;
+                }
+
+            }
+            if(epsilon_counter == prod.second.size()){
+                first[prod.first].insert("");
+            }
+        }
+    }
+
+}
+
+//creates follow for grammar
+void SLR::createFollow(const string &variable) {
+    for(const auto& prod : this->getProductions()){
+        //loop through body
+        for(unsigned int i = 0; i < prod.second.size(); i++){
+            if(variable == prod.second[i]){
+                vector<string> beta;
+                for(unsigned int j = i+1; j < prod.second.size();j++){
+                    beta.push_back(prod.second[j]);
+                }
+                set<string> firstBeta = firstOfString(beta);
+                bool epsilon = false;
+                for(const auto& b : firstBeta){
+                    if(b.empty()){
+                        epsilon = true;
+                    }else{
+                        follows[prod.second[i]].insert(b);
+                    }
+                }
+                //if the last element or first of beta contain epsilon
+                if(i == prod.second.size()-1 || epsilon){
+                    createFollow(prod.first);
+                    for(const auto &f : follows[prod.first]){
+                        follows[variable].insert(f);
+                    }
+                }
+
+            }
+        }
+    }
+
+}
+//helping function for follow
+set<string> SLR::firstOfString(const vector<string> &beta) {
+    set<string> firsts;
+    int epsilon_counter = 0;
+    for(const auto &s : beta){
+        bool epsilon = false;
+        for(const auto& f : first[s]){
+            if(!f.empty()){
+                firsts.insert(f);
+            }else{
+                epsilon = true;
+                epsilon_counter++;
+            }
+        }
+        if(!epsilon){
+            break;
+        }
+    }
+    if (epsilon_counter == beta.size()){
+        firsts.insert("");
+    }
+    return firsts;
 }

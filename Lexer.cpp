@@ -197,9 +197,9 @@ std::vector<Token> Lexer::tokenize() noexcept {
     }
     /*tokens.emplace_back(Token::END_OF_FILE, "<EOS>",this->line,this->column);
     // we have nothing in our file to compile even with all the comments it's going to skip everything! so ERROR !*/
-    if (tokens.empty()){
+    /*if (tokens.empty()){
         tokens.emplace_back(Token::ERROR,"empty file",this->line,this->column);
         return tokens;
-    }
+    }*/
     return tokens;
 }

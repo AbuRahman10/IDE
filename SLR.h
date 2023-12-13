@@ -30,7 +30,7 @@ private:
     I CL;
     vector<pair<action,go>> parsing_table;
     map<string,set<string>> follows;
-
+    map<string,set<string>> first;
     //these variables are not part of the slr algo but they are here to help the implementation
     vector<vector<string>> I_vector;
     vector<string> rem_variables;
@@ -41,8 +41,6 @@ public:
     void closure();
 
     void variable_check(I& i0);
-
-    bool production_checker(const string& head, I& i0);
 
     void i_vector_maker(const I &i);
 
@@ -60,7 +58,11 @@ public:
 
     int shift_check(const pair<production,int>& rule_to_check);
 
-    void createFollow(const string& variable);
+    void createFollow(const string &variable);
+
+    void createFirst(const string& symbol);
+
+    set<string> firstOfString(const vector<string> &beta);
 
     bool slr_parsing(vector<string> &input, pair<vector<string>,vector<string>> &stack_value);
 };

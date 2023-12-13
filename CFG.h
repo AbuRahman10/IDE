@@ -11,6 +11,7 @@
 #include "json.hpp"
 #include "fstream"
 #include "Lexer.h"
+#include "regex"
 
 using json = nlohmann::json;
 using namespace std;

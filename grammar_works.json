@@ -1,0 +1,20 @@
+{
+  "Variables": ["S","DECLARATION","INITIALISATION"],
+  "Terminals": ["string","char","int",";","=","[0-9]+","'[a-zA-Z0-9]'","[a-zA-Z][a-zA-Z0-9]*","\"[a-zA-Z0-9]*\"","bool","true","false","0","1","'[0-9]+'"],
+  "Productions": [
+    {"head": "S", "body": ["DECLARATION",";"]}, {"head": "S", "body": ["INITIALISATION",";"]},
+    {"head": "DECLARATION", "body": ["string","[a-zA-Z][a-zA-Z0-9]*"]},
+    {"head": "DECLARATION", "body": ["int","[a-zA-Z][a-zA-Z0-9]*"]},
+    {"head": "DECLARATION", "body": ["char","[a-zA-Z][a-zA-Z0-9]*"]},
+    {"head": "DECLARATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*"]},
+    {"head": "INITIALISATION", "body": ["string","[a-zA-Z][a-zA-Z0-9]*","=","\"[a-zA-Z0-9]*\""]},
+    {"head": "INITIALISATION", "body": ["int","[a-zA-Z][a-zA-Z0-9]*","=","[0-9]+"]},
+    {"head": "INITIALISATION", "body": ["char","[a-zA-Z][a-zA-Z0-9]*","=","'[a-zA-Z0-9]'"]},
+    {"head": "INITIALISATION", "body": ["char","[a-zA-Z][a-zA-Z0-9]*","=","'[0-9]+'"]},
+    {"head": "INITIALISATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*","=","true"]},
+    {"head": "INITIALISATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*","=","false"]},
+    {"head": "INITIALISATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*","=","0"]},
+    {"head": "INITIALISATION", "body": ["bool","[a-zA-Z][a-zA-Z0-9]*","=","1"]}
+  ],
+  "Start": "S"
+}

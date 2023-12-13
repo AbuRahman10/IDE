@@ -1,22 +1,17 @@
 #include <iostream>
 #include "SLR.h"
 #include "CFG.h"
+#include "regex"
 #include <sstream>
 #include "Lexer.h"
 int main() {
-/*    CFG cfg("grammar.json");
+    CFG cfg("grammar_works.json");
     SLR slr(cfg);
     slr.closure();
     slr.goto_constructor();
-    slr.creating_parsing_table();*/
-    ifstream our_file("./input_code.txt");
-    stringstream buffer;
-    buffer << our_file.rdbuf();
-    string code = buffer.str();
-    Lexer tokenizer(code);
-    vector<Token> our_tokens = tokenizer.tokenize();
-    for (int i = 0; i < our_tokens.size(); ++i) {
-        cout << "Token: "<< to_string(our_tokens[i].type) << " Value: " << our_tokens[i].word << " at line :"<<our_tokens[i].line<< " at column: "<<our_tokens[i].column<< endl;
-    }
+    slr.creating_parsing_table();
+    vector<string> input = {"char","[a-zA-Z][a-zA-Z0-9]*","=","'[0-9]+'",";","$"};
+    pair<vector<string>,vector<string>> stack_value = {{"0"},input};
+    cout << boolalpha << slr.slr_parsing(input,stack_value);
     return 0;
 }
