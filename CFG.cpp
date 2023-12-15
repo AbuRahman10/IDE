@@ -4,6 +4,7 @@
 
 #include "CFG.h"
 #include "SLR.h"
+#include "regex"
 
 CFG::CFG(const std::string& filename){
     std::ifstream input(filename);
@@ -98,13 +99,14 @@ bool CFG::parse(vector<Token> &tokens)
     if(tokens.empty()){
         return true;
     }
-    CFG cfg("grammar_works.json");
+    CFG cfg("grammar2.json");
     vector<string> input;
     string dataType;
+    string data_structure;
     input.reserve(tokens.size());
     regex identifier("[a-zA-Z][a-zA-Z0-9]*");
     regex integer("[0-9]+");
-    regex str("\"[a-zA-Z0-9]*\"");
+    regex str("\"[a-zA-Z_][a-zA-Z0-9_]*\"");
     regex ch("'[a-zA-Z0-9]'");
     regex ch1("'[0-9]+'");
     for (const Token& token : tokens)
@@ -113,9 +115,9 @@ bool CFG::parse(vector<Token> &tokens)
             dataType = token.word;
         }
         if(token.typeToString() == "N"){
-            std::regex pattern("[a-zA-Z][a-zA-Z0-9]*");
+            std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
             if(regex_match(token.word,pattern)){
-                input.emplace_back("[a-zA-Z][a-zA-Z0-9]*");
+                input.emplace_back("[a-zA-Z_][a-zA-Z0-9_]*");
             } else{
                 input.emplace_back(token.word);
             }
@@ -126,7 +128,7 @@ bool CFG::parse(vector<Token> &tokens)
                 }
             }else if(dataType == "string"){
                 if(regex_match(token.word,str) || token.word.empty()){
-                    input.emplace_back("\"[a-zA-Z0-9]*\"");
+                    input.emplace_back("\"[a-zA-Z_][a-zA-Z0-9_]*\"");
                 }
             } else if(dataType == "char"){
                 if(regex_match(token.word,ch)){

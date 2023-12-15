@@ -13,7 +13,7 @@
 #include <set>
 #include "string"
 struct Token {
-    enum Type { DATATYPE, DECLARATION_NAME, VALUE, OPERATOR, PUNCTUATION, END_OF_FILE, ERROR,BRACKETS,PARENTHESIS,NEWLINE};
+    enum Type { DATATYPE, DECLARATION_NAME, VALUE, OPERATOR, PUNCTUATION, END_OF_FILE, ERROR,BRACKETS,PARENTHESIS,NEWLINE,SQUARE_BRACKETS};
     std::string typeToString() const{
         switch (this->type) {
             case DATATYPE:

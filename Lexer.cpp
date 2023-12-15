@@ -139,7 +139,7 @@ Token Lexer::lexOperatorOrPunctuation() {
 }
 
 bool Lexer::isKeyword(const std::string& str)const {
-    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char"};
+    const std::set<std::string> keywords = {"string","bool", "int", "float", "double", "char", "vector", "set"};
     return keywords.find(str) != keywords.end();
 }
 
