@@ -1,9 +1,15 @@
 {
   "Variables": ["S","DECLARATION","INITIALISATION"],
-  "Terminals": ["set",">","<","vector","string","char","int",";","=","[0-9]+","'[a-zA-Z0-9]'","[a-zA-Z_][a-zA-Z0-9_]*","\"[a-zA-Z_][a-zA-Z0-9_]*\""
+  "Terminals": ["[","]","set",">","<","vector","string","char","int",";","=","[0-9]+","'[a-zA-Z_][a-zA-Z0-9_]*'","[a-zA-Z_][a-zA-Z0-9_]*","\"[a-zA-Z_][a-zA-Z0-9_]*\""
   ,"bool","true","false","0","1","'[0-9]+'"],
   "Productions": [
     {"head": "S", "body": ["DECLARATION",";"]}, {"head": "S", "body": ["INITIALISATION",";"]},
+
+    {"head": "DECLARATION","body":["int","[a-zA-Z_][a-zA-Z0-9_]*","[","[0-9]+","]"]},
+    {"head": "DECLARATION","body":["char","[a-zA-Z_][a-zA-Z0-9_]*","[","]"]},
+    {"head": "DECLARATION","body":["bool","[a-zA-Z_][a-zA-Z0-9_]*","[","]"]},
+    {"head": "DECLARATION","body":["string","[a-zA-Z_][a-zA-Z0-9_]*","[","]"]},
+
     {"head": "DECLARATION", "body": ["string","[a-zA-Z_][a-zA-Z0-9_]*"]},
     {"head": "DECLARATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*"]},
     {"head": "DECLARATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*"]},
@@ -25,7 +31,7 @@
     {"head": "INITIALISATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*","=","[0-9]+"]},
     {"head": "INITIALISATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*","=","-[0-9]+"]},
 
-    {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[a-zA-Z0-9]'"]},
+    {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[a-zA-Z_][a-zA-Z0-9_]*'"]},
     {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'"]},
 
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z_][a-zA-Z0-9_]*","=","true"]},

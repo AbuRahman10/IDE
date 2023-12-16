@@ -107,10 +107,11 @@ bool CFG::parse(vector<Token> &tokens)
     regex identifier("[a-zA-Z][a-zA-Z0-9]*");
     regex integer("[0-9]+");
     regex str("\"[a-zA-Z_][a-zA-Z0-9_]*\"");
-    regex ch("'[a-zA-Z0-9]'");
+    regex ch("'[a-zA-Z_][a-zA-Z0-9_]*'");
     regex ch1("'[0-9]+'");
     for (const Token& token : tokens)
     {
+        string checking_token = token.word;
         if(token.typeToString() == "D"){
             dataType = token.word;
         }
@@ -132,15 +133,23 @@ bool CFG::parse(vector<Token> &tokens)
                 }
             } else if(dataType == "char"){
                 if(regex_match(token.word,ch)){
-                    input.emplace_back("'[a-zA-Z0-9]'");
+                    input.emplace_back("'[a-zA-Z_][a-zA-Z0-9_]*'");
                 }else if(regex_match(token.word,ch1)){
                     input.emplace_back("'[0-9]+'");
                 }
-            } else{
+            } else if (dataType == "bool"){
+                if (token.word == "true"|| token.word == "false"){
+                    input.emplace_back(token.word);
+                }else{ // 1 dimensional arrays
+                    continue;
+                }
+            }
+            else{
                 input.push_back(token.word);
             }
         }
         else{
+
             input.push_back(token.word);
         }
     }

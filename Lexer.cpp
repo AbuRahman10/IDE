@@ -133,7 +133,10 @@ Token Lexer::lexOperatorOrPunctuation() {
         return {Token::BRACKETS, tokenValue, this->line, this->column};
     } else if (tokenValue == "{" || tokenValue == "}") {
         return {Token::PARENTHESIS, tokenValue, this->line, this->column};
-    } else {
+    }else if(tokenValue == "[" || tokenValue == "]"){
+        return {Token::SQUARE_BRACKETS,tokenValue,this->line,this->column};
+    }
+    else {
         return {Token::OPERATOR, tokenValue, this->line, this->column}; // Single char operator
     }
 }
