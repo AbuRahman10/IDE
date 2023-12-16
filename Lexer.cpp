@@ -172,6 +172,9 @@ Token Lexer::lexIdentifierOrKeyword() {
     if (isKeyword(identifier)) {
         return {Token::DATATYPE, identifier,this->line,this->column};
     }
+    else if (identifier == "true"|| identifier == "false"){
+        return {Token::VALUE,identifier,this->line,this->column};
+    }
         // aka variable naam
     else {
         return {Token::DECLARATION_NAME, identifier,this->line,this->column};
