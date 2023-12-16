@@ -8,8 +8,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QTextCursor>
-#include "Lexer.h"
-#include "CFG.h"
+#include "../src/Lexer.h"
+#include "../src/CFG.h"
 #include "message.h"
 #include <QTimer>
 #include <QThread>
