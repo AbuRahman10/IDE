@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include "iostream"
 #include "vector"
+#include "QPushButton"
 
 using namespace std;
 
@@ -21,11 +22,17 @@ public:
     ~MainWindow();
 private slots:
     void inputtest();
+    void consoletest();
     void onButtonClicked();
-    void textchanged(QTextEdit *editor);
     void oneLine(QTextEdit *editor);
+    void simulateRunButtonClick();
+    void clearALL(QPushButton* clearButton);
+    void settings();
+    void save();
+    void open();
 private:
     Ui::MainWindow *ui;
     vector<QTextEdit*> editors;
+    vector<QFrame*> frames;
 };
 #endif // MAINWINDOW_H

@@ -32,7 +32,7 @@ set(PROJECT_SOURCES
         CFG.cpp
         message.cpp
         message.h)
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(IDE_GUI
             MANUAL_FINALIZATION
