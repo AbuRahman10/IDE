@@ -14,7 +14,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QMessageBox>
-#include "fstream"
+#include "QDebug"
 
 using namespace std;
 
@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ofstream file("debug.txt");
+    file.clear();
+    file << "MainWindow called" << endl;
     ///////// FRAMES /////////
     frames.push_back(ui->frame);
     frames.push_back(ui->frame_2);
@@ -53,9 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->clearInput, &QPushButton::clicked, [=]() {clearALL(ui->clearInput);});
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
     ///////// LIVE EDITOR /////////
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::simulateRunButtonClick);
-    timer->start(400);
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(simulateRunButtonClick()));
+    timer->start(2000);
+    file << "Timer called" << endl;
+    file.close();
     this->setWindowTitle("IDE");
     setWindowIcon(QIcon("logo.png"));
     this->setStyleSheet("background-color: #49006d;");
@@ -63,11 +68,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "~MainWindow called" << endl;
+    file.close();
     delete ui;
 }
 
 void MainWindow::simulateRunButtonClick()
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "simulateRunButtonClick called" << endl;
+    file.close();
     // Save the current cursor position for all editors
     QVector<QTextCursor> originalCursors;
     for (QTextEdit* editor : editors)
@@ -96,11 +107,17 @@ void MainWindow::simulateRunButtonClick()
 
 void MainWindow::onButtonClicked()
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "onButtonClicked called" << endl;
+    file.close();
     ui->RUN->setChecked(false);
 }
 
 void MainWindow::inputtest()
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "inputtest called" << to_string(counter++) << endl;
+    file.close();
     // INPUT
     vector<QString> Qinputs;
     vector<string> inputs;
@@ -179,6 +196,9 @@ void MainWindow::inputtest()
 
 void MainWindow::consoletest()
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "consoletest called" << endl;
+    file.close();
     // EXIT CODES
     QString exit0 = "Process finished with exit code 0";
     QString exit1 = "Process finished with exit code 1";
@@ -222,6 +242,9 @@ void MainWindow::consoletest()
 
 void MainWindow::oneLine(QTextEdit *editor)
 {
+    ofstream file("debug.txt", std::ios::app);
+    file << "oneLine called" << endl;
+    file.close();
     QString qin = editor->toPlainText();
     string in = qin.toStdString();
     string newInput;
@@ -302,6 +325,9 @@ void MainWindow::save()
 
 void MainWindow::open()
 {
+    ofstream file1("debug.txt", std::ios::app);
+    file1 << "open called" << endl;
+    file1.close();
     ifstream file("SavedFile.txt");
     if (file.is_open())
     {

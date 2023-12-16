@@ -34,5 +34,7 @@ private:
     Ui::MainWindow *ui;
     vector<QTextEdit*> editors;
     vector<QFrame*> frames;
+    QTimer* timer;
+    int counter = 0;
 };
 #endif // MAINWINDOW_H

@@ -141,7 +141,7 @@ bool CFG::parse(vector<Token> &tokens)
                 if (token.word == "true"|| token.word == "false"){
                     input.emplace_back(token.word);
                 }else{ // 1 dimensional arrays
-                    continue;
+                    input.emplace_back(token.word);
                 }
             }
             else{
