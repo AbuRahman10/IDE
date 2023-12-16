@@ -1,8 +1,0 @@
-{
-  "Variables": ["S"],
-  "Terminals": ["D","N","O","V","P","X"],
-  "Productions": [
-    {"head": "S", "body": ["D", "N", "O","V","P"]}, {"head": "S", "body": ["D","N","P"]}
-  ],
-  "Start": "S"
-}
