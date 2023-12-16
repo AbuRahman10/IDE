@@ -276,7 +276,11 @@ bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> 
     string action = parsing_table[stoi(stack_value.first[stack_value.first.size()-1])].first[ss];
 
     if (action == "accept") {
-        accept = true;
+        if(input.size() > 1){
+            accept = false;
+        }else{
+            accept = true;
+        }
     }
     if (action[0] == 's') {
         stack_value.first.push_back(*input.begin());
