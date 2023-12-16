@@ -99,7 +99,7 @@ bool CFG::parse(vector<Token> &tokens)
     if(tokens.empty()){
         return true;
     }
-    CFG cfg("grammar2.json");
+    CFG cfg("grammar.json");
     vector<string> input;
     string dataType;
     string data_structure;

@@ -15,23 +15,23 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 ###### PROJECT ZONDER GUI #######
 add_executable(IDE
         mainBE.cpp
-        SLR.cpp
-        CFG.cpp
-        Lexer.h
-        Lexer.cpp)
+        src/SLR.cpp
+        src/CFG.cpp
+        src/Lexer.h
+        src/Lexer.cpp)
 
 ########### GUI ############
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        Lexer.h
-        Lexer.cpp
-        SLR.cpp
-        CFG.cpp
-        message.cpp
-        message.h)
+        gui/mainwindow.cpp
+        gui/mainwindow.h
+        gui/mainwindow.ui
+        src/Lexer.h
+        src/Lexer.cpp
+        src/SLR.cpp
+        src/CFG.cpp
+        gui/message.cpp
+        gui/message.h)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(IDE_GUI

@@ -1,9 +1,9 @@
 #include <iostream>
-#include "SLR.h"
-#include "CFG.h"
+#include "src/SLR.h"
+#include "src/CFG.h"
 #include "regex"
 #include <sstream>
-#include "Lexer.h"
+#include "src/Lexer.h"
 int main() {
 /*    CFG cfg("grammar_works.json");
     SLR slr(cfg);
