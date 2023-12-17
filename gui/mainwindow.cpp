@@ -55,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->clearConsole, &QPushButton::clicked, [=]() {clearALL(ui->clearConsole);});
     connect(ui->clearInput, &QPushButton::clicked, [=]() {clearALL(ui->clearInput);});
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+    cfg = CFG("grammar.json");
+    parser = cfg.createTable();
     ///////// LIVE EDITOR /////////
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(simulateRunButtonClick()));
@@ -135,8 +137,7 @@ void MainWindow::inputtest()
         Lexer lexer(inputs[i]);
         auto get_tokens = lexer.tokenize();
         ///////// CFG AND PARSER /////////
-        CFG cfg;
-        bool accept = cfg.parse(get_tokens);
+        bool accept = cfg.parse(get_tokens,parser);
         ///////// ACCEPTER /////////
         if (accept)  // juiste syntax
         {
@@ -222,8 +223,7 @@ void MainWindow::consoletest()
         Lexer lexer(inputs[i]);
         auto get_tokens = lexer.tokenize();
         ///////// CFG AND PARSER /////////
-        CFG cfg;
-        bool accept = cfg.parse(get_tokens);
+        bool accept = cfg.parse(get_tokens,parser);
         ///////// ACCEPTER /////////
         if (accept)  // juiste syntax
         {

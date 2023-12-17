@@ -13,6 +13,7 @@
 #include "Lexer.h"
 #include "regex"
 
+class SLR;
 using json = nlohmann::json;
 using namespace std;
 
@@ -46,7 +47,9 @@ public:
 
     void print();
 
-    bool parse(vector<Token> &tokens);
+    bool parse(vector<Token> &tokens, SLR &parser);
+
+    SLR createTable();
 };
 
 

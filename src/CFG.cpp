@@ -94,15 +94,15 @@ const std::vector<std::string> &CFG::getTerminals() const {
     return terminals;
 }
 
-bool CFG::parse(vector<Token> &tokens)
+bool CFG::parse(vector<Token> &tokens, SLR &parser)
 {
+    vector<string> input;
     if(tokens.empty()){
         return true;
     }
-    CFG cfg("grammar.json");
-    vector<string> input;
     string dataType;
     string data_structure;
+    input.clear();
     input.reserve(tokens.size());
     regex identifier("[a-zA-Z][a-zA-Z0-9]*");
     regex integer("[0-9]+");
@@ -154,11 +154,15 @@ bool CFG::parse(vector<Token> &tokens)
         }
     }
     input.emplace_back("$");
-    SLR parser(cfg);
-    parser.closure();
-    parser.goto_constructor();
-    parser.creating_parsing_table();
     pair<vector<string>,vector<string>> stack_value = {{"0"},input};
     bool accept = parser.slr_parsing(input,stack_value);
     return accept;
+}
+
+SLR CFG::createTable() {
+    SLR parser(*this);
+    parser.closure();
+    parser.goto_constructor();
+    parser.creating_parsing_table();
+    return parser;
 }

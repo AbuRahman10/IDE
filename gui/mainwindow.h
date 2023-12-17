@@ -6,6 +6,8 @@
 #include "iostream"
 #include "vector"
 #include "QPushButton"
+#include "../src/CFG.h"
+#include "../src/SLR.h"
 
 using namespace std;
 
@@ -35,6 +37,8 @@ private:
     vector<QTextEdit*> editors;
     vector<QFrame*> frames;
     QTimer* timer;
+    SLR parser;
+    CFG cfg;
     int counter = 0;
 };
 #endif // MAINWINDOW_H

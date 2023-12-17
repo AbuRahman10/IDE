@@ -35,6 +35,7 @@ private:
     vector<vector<string>> I_vector;
     vector<string> rem_variables;
 public:
+    SLR() = default;
 
     SLR(CFG& cfg);
 
