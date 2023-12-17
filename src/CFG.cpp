@@ -106,8 +106,10 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
     input.reserve(tokens.size());
     regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
     regex integer("[0-9]+");
-    regex str("\"[a-zA-Z0-9_][a-zA-Z0-9_]*\"");
-    regex ch("'[a-zA-Z_][a-zA-Z0-9_]*'");
+    // has to be raw cuz of escape sequence
+    regex str(R"("\s*[a-zA-Z0-9_]*\s*")");
+    // has to be raw cuz of escape sequence
+    regex ch(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
     regex ch1("'[0-9]+'");
     for (const Token& token : tokens)
     {
@@ -129,20 +131,18 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
                 }
             }else if(dataType == "string"){
                 if(regex_match(token.word,str) || token.word.empty()){
-                    input.emplace_back("\"[a-zA-Z0-9_][a-zA-Z0-9_]*\"");
+                    // has to be raw cuz of escape sequence
+                    input.emplace_back(R"("\s*[a-zA-Z0-9_]*\s*")");
                 }
             } else if(dataType == "char"){
                 if(regex_match(token.word,ch)){
-                    input.emplace_back("'[a-zA-Z_][a-zA-Z0-9_]*'");
+                    // has to be raw cuz of escape sequence
+                    input.emplace_back(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
                 }else if(regex_match(token.word,ch1)){
                     input.emplace_back("'[0-9]+'");
                 }
             } else if (dataType == "bool"){
-                if (token.word == "true"|| token.word == "false"){
-                    input.emplace_back(token.word);
-                }else{ // 1 dimensional arrays
-                    input.emplace_back(token.word);
-                }
+                input.emplace_back(token.word);
             }
             else{
                 input.push_back(token.word);
