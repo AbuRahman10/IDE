@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     ///////// LIVE EDITOR /////////
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(simulateRunButtonClick()));
-    timer->start(2000);
+    timer->start(400);
     file << "Timer called" << endl;
     file.close();
     this->setWindowTitle("IDE");

@@ -5,7 +5,7 @@
 #include <sstream>
 #include "src/Lexer.h"
 int main() {
-    string code = "string test = \"a\";";
+    string code = "int i = 0;";
     Lexer ome (code);
     auto get = ome.tokenize();
     CFG some;

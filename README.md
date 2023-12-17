@@ -10,4 +10,4 @@ This project is built using QT framework and it works in C++11.
 - Raadin Bahrami
 <br>
 <br>
-![ide](recourses/ide.png)
+![ide](ide.png)

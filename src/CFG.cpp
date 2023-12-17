@@ -104,9 +104,9 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
     string data_structure;
     input.clear();
     input.reserve(tokens.size());
-    regex identifier("[a-zA-Z][a-zA-Z0-9]*");
+    regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
     regex integer("[0-9]+");
-    regex str("\"[a-zA-Z_][a-zA-Z0-9_]*\"");
+    regex str("\"[a-zA-Z0-9_][a-zA-Z0-9_]*\"");
     regex ch("'[a-zA-Z_][a-zA-Z0-9_]*'");
     regex ch1("'[0-9]+'");
     for (const Token& token : tokens)
@@ -116,9 +116,9 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
             dataType = token.word;
         }
         if(token.typeToString() == "N"){
-            std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
+            std::regex pattern("[a-zA-Z][a-zA-Z0-9_]*");
             if(regex_match(token.word,pattern)){
-                input.emplace_back("[a-zA-Z_][a-zA-Z0-9_]*");
+                input.emplace_back("[a-zA-Z][a-zA-Z0-9_]*");
             } else{
                 input.emplace_back(token.word);
             }
@@ -129,7 +129,7 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
                 }
             }else if(dataType == "string"){
                 if(regex_match(token.word,str) || token.word.empty()){
-                    input.emplace_back("\"[a-zA-Z_][a-zA-Z0-9_]*\"");
+                    input.emplace_back("\"[a-zA-Z0-9_][a-zA-Z0-9_]*\"");
                 }
             } else if(dataType == "char"){
                 if(regex_match(token.word,ch)){
