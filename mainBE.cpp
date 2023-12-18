@@ -12,5 +12,4 @@ int main() {
     SLR slr = some.createTable();
     cout << some.parse(get,slr);
     return 0;
-
 }
