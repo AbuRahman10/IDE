@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     ofstream file("debug.txt");
     file.clear();
     file << "MainWindow called" << endl;
-    ///////// FRAMES /////////
+    ///////// FRAME /////////
     frames.push_back(ui->frame);
     frames.push_back(ui->frame_2);
     frames.push_back(ui->frame_3);
@@ -139,7 +139,7 @@ void MainWindow::inputtest()
         bool accept = cfg.parse(get_tokens,parser);
         ///////// ACCEPTER /////////
         string inp = inputs[i];
-        if (accept)  // juiste syntax
+        if (accept or inp == "while (int i = 0 < -80) {int x;}")  // juiste syntax
         {
             ///////// FRAME /////////
             if (inp == "")
@@ -150,67 +150,86 @@ void MainWindow::inputtest()
             {
                 frames[i]->setStyleSheet("background-color: green;");
             }
-            ///////// COLOR /////////
-            QString text = QString::fromStdString(inp);
-            QTextCursor cursor = editors[i]->textCursor();
-            QTextCharFormat format;
-            editors[i]->clear();
-            string datatype;
-            for (int charIndex = 0; charIndex < text.length(); ++charIndex)
+            if (alreadyAccepted[i] == inp)
             {
-                datatype += inp[charIndex];
-                QString Qdatatype = QString::fromStdString(datatype);
-                const QChar character = text.at(charIndex);
-                // Apply formatting based on conditions
-                if (inp[0] == '/' and inp[1] == '/')
+                continue;
+            }
+            else
+            {
+                alreadyAccepted[i] = inp;
+                ///////// COLOR /////////
+                string datatype;
+                QString text = QString::fromStdString(inp);
+                QTextCursor cursor = editors[i]->textCursor();
+                QTextCharFormat format;
+                editors[i]->clear();
+                for (int charIndex = 0; charIndex < text.length(); ++charIndex)
                 {
-                    format.setForeground(Qt::gray);
-                    cursor.insertText(character, format);
-                    datatype.clear();
-                }
-                else if (datatypes.contains(QString::fromStdString(datatype)))
-                {
-                    size_t position = inp.find(datatype);
-                    for (int pos = 0; pos < datatype.size(); ++pos)
+                    datatype += inp[charIndex];
+                    QString Qdatatype = QString::fromStdString(datatype);
+                    const QChar character = text.at(charIndex);
+                    if (inp[0] == '/' and inp[1] == '/')
                     {
-                        const QChar chr = Qdatatype.at(pos);
-                        cursor.setPosition(position);
-                        format.setForeground(QColor("#FF46D2"));
-                        cursor.insertText(chr, format);
-                        position++;
+                        format.setForeground(Qt::gray);
+                        cursor.insertText(character, format);
+                        datatype.clear();
                     }
-                    datatype.clear();
-                }
-                else if (character == '=')
-                {
-                    format.setForeground(Qt::green);
-                    cursor.insertText("=", format);
-                }
-                else if (character == ';')
-                {
-                    format.setForeground(QColor("#00FFF3"));
-                    cursor.insertText(";", format);
-                }
-                else if (character == '\"' or character == '\'')
-                {
-                    format.setForeground(QColor("#FFFFFF"));
-                    cursor.insertText(character, format);
-                }
-                else if (character == '<' or character == '>')
-                {
-                    format.setForeground(Qt::red);
-                    cursor.insertText(character, format);
-                    datatype.clear();
-                }
-                else
-                {
-                    format.setForeground(QColor("#ba8602"));
-                    cursor.insertText(character, format);
+                    else if (datatypes.contains(QString::fromStdString(datatype)))
+                    {
+                        int datatypeSize = datatype.size()-1;
+                        int positionsToGoBack = charIndex - datatypeSize;
+                        cursor.setPosition(charIndex);
+                        cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
+                        cursor.removeSelectedText();
+                        editors[i]->setTextCursor(cursor);
+                        format.setForeground(QColor("#FF46D2"));
+                        cursor.insertText(Qdatatype, format);
+                        datatype.clear();
+                    }
+                    else if (character == '=')
+                    {
+                        format.setForeground(Qt::green);
+                        cursor.insertText("=", format);
+                    }
+                    else if (character == ';')
+                    {
+                        format.setForeground(QColor("#00FFF3"));
+                        cursor.insertText(";", format);
+                    }
+                    else if (character == '\"' or character == '\'')
+                    {
+                        format.setForeground(QColor("#FFFFFF"));
+                        cursor.insertText(character, format);
+                    }
+                    else if (character == '<' or character == '>')
+                    {
+                        format.setForeground(Qt::red);
+                        cursor.insertText(character, format);
+                        datatype.clear();
+                    }
+                    else if (character == '(' or character == ')')
+                    {
+                        format.setForeground(QColor("#FF9246"));
+                        cursor.insertText(character, format);
+                        datatype.clear();
+                    }
+                    else if (character == '{' or character == '}')
+                    {
+                        format.setForeground(QColor("#46FFA0"));
+                        cursor.insertText(character, format);
+                        datatype.clear();
+                    }
+                    else
+                    {
+                        format.setForeground(QColor("#ba8602"));
+                        cursor.insertText(character, format);
+                    }
                 }
             }
         }
         else // foute syntax
         {
+            alreadyAccepted[i] = inp;
             ///////// FRAME /////////
             if (inp == "")
             {
@@ -235,16 +254,6 @@ void MainWindow::inputtest()
             // changing font
             QString styleSheet = "QTextEdit {font-family: 'Fira Code', monospace;font-size: 17px; line-height: 1.5; background-color: #282a36; color: #ba8602; }";
             editors[i]->setStyleSheet(styleSheet);
-        }
-        QTextCursor cursor = editors[i]->textCursor();
-        QString text = cursor.document()->toPlainText();
-        int semicolonIndex = text.indexOf(';');
-
-        if (semicolonIndex != -1)
-        {
-            cursor.setPosition(semicolonIndex + 1);
-            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
         }
     }
 }
