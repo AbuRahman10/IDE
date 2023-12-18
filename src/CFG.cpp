@@ -105,7 +105,7 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
     input.clear();
     input.reserve(tokens.size());
     regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
-    regex integer("[0-9]+");
+    regex integer("[+-]?[0-9]+");
     // has to be raw cuz of escape sequence
     regex str(R"("\s*[a-zA-Z0-9_]*\s*")");
     // has to be raw cuz of escape sequence
@@ -127,7 +127,7 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
         } else if(token.typeToString() == "V"){
             if(dataType == "int"){
                 if(regex_match(token.word,integer)){
-                    input.emplace_back("[0-9]+");
+                    input.emplace_back("[+-]?[0-9]+");
                 }
             }else if(dataType == "string"){
                 if(regex_match(token.word,str) || token.word.empty()){

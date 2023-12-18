@@ -175,8 +175,13 @@ Token Lexer::lexIdentifierOrKeyword() {
     if (isKeyword(identifier)) {
         return {Token::DATATYPE, identifier,this->line,this->column};
     }
+    // values
     else if (identifier == "true"|| identifier == "false"){
         return {Token::VALUE,identifier,this->line,this->column};
+    }
+    // loops en control-statement
+    else if (identifier == "while" || identifier == "if" || identifier == "else"){
+        return { Token::KEYWORD,identifier,this->line,this->column};
     }
         // aka variable naam
     else {
