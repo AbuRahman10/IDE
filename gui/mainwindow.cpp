@@ -132,13 +132,13 @@ void MainWindow::inputtest()
     }
     for (int i = 0; i < 10; i++)
     {
-        string inp = inputs[i];
         ///////// LEXER /////////
         Lexer lexer(inputs[i]);
         auto get_tokens = lexer.tokenize();
         ///////// CFG AND PARSER /////////
         bool accept = cfg.parse(get_tokens,parser);
         ///////// ACCEPTER /////////
+        string inp = inputs[i];
         if (accept)  // juiste syntax
         {
             ///////// FRAME /////////
@@ -150,19 +150,63 @@ void MainWindow::inputtest()
             {
                 frames[i]->setStyleSheet("background-color: green;");
             }
-            ///////// EDITOR /////////
-            // Remove underline
-            QTextCursor cursor(editors[i]->document());
+            ///////// COLOR /////////
+            QString text = QString::fromStdString(inp);
+            QTextCursor cursor = editors[i]->textCursor();
             QTextCharFormat format;
-            format.setUnderlineStyle(QTextCharFormat::NoUnderline);
-            cursor.setPosition(0);
-            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-            cursor.mergeCharFormat(format);
-            QString styleSheet = editors[i]->styleSheet();
-            if (inputs[i] != "")
+            editors[i]->clear();
+            string datatype;
+            for (int charIndex = 0; charIndex < text.length(); ++charIndex)
             {
-                styleSheet += " QTextEdit { color: green; }";
-                editors[i]->setStyleSheet(styleSheet);
+                datatype += inp[charIndex];
+                QString Qdatatype = QString::fromStdString(datatype);
+                const QChar character = text.at(charIndex);
+                // Apply formatting based on conditions
+                if (inp[0] == '/' and inp[1] == '/')
+                {
+                    format.setForeground(Qt::gray);
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else if (datatypes.contains(QString::fromStdString(datatype)))
+                {
+                    size_t position = inp.find(datatype);
+                    for (int pos = 0; pos < datatype.size(); ++pos)
+                    {
+                        const QChar chr = Qdatatype.at(pos);
+                        cursor.setPosition(position);
+                        format.setForeground(QColor("#FF46D2"));
+                        cursor.insertText(chr, format);
+                        position++;
+                    }
+                    datatype.clear();
+                }
+                else if (character == '=')
+                {
+                    format.setForeground(Qt::green);
+                    cursor.insertText("=", format);
+                }
+                else if (character == ';')
+                {
+                    format.setForeground(QColor("#00FFF3"));
+                    cursor.insertText(";", format);
+                }
+                else if (character == '\"' or character == '\'')
+                {
+                    format.setForeground(QColor("#FFFFFF"));
+                    cursor.insertText(character, format);
+                }
+                else if (character == '<' or character == '>')
+                {
+                    format.setForeground(Qt::red);
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else
+                {
+                    format.setForeground(QColor("#ba8602"));
+                    cursor.insertText(character, format);
+                }
             }
         }
         else // foute syntax
@@ -191,6 +235,16 @@ void MainWindow::inputtest()
             // changing font
             QString styleSheet = "QTextEdit {font-family: 'Fira Code', monospace;font-size: 17px; line-height: 1.5; background-color: #282a36; color: #ba8602; }";
             editors[i]->setStyleSheet(styleSheet);
+        }
+        QTextCursor cursor = editors[i]->textCursor();
+        QString text = cursor.document()->toPlainText();
+        int semicolonIndex = text.indexOf(';');
+
+        if (semicolonIndex != -1)
+        {
+            cursor.setPosition(semicolonIndex + 1);
+            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
         }
     }
 }

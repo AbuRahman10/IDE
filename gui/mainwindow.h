@@ -40,5 +40,6 @@ private:
     SLR parser;
     CFG cfg;
     int counter = 0;
+    QVector<QString> datatypes = {"string","bool", "int", "char", "vector", "set","//"};
 };
 #endif // MAINWINDOW_H

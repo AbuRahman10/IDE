@@ -5,6 +5,6 @@ bool test = 0;
 vector<string> test;
 set<string> test;
 int test;
-string test;
+string test = "0";
 char test;
 bool test;
