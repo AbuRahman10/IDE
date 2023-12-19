@@ -66,6 +66,11 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("IDE");
     setWindowIcon(QIcon("logo.png"));
     this->setStyleSheet("background-color: #49006d;");
+    //////// NO HORIZONTAL SCROLLBARS ////////
+    for (QTextEdit* editor : editors)
+    {
+        editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -308,6 +313,7 @@ void MainWindow::oneLine(QTextEdit *editor)
     ofstream file("debug.txt", std::ios::app);
     file << "oneLine called" << endl;
     file.close();
+    bool newLine = false;
     QString qin = editor->toPlainText();
     string in = qin.toStdString();
     string newInput;
@@ -317,12 +323,19 @@ void MainWindow::oneLine(QTextEdit *editor)
     {
         if (ch == '\n')
         {
-            message(Qmsg);
-            editor->clear();
-            editor->insertPlainText(QString::fromStdString(newInput));
-            return;
+            newLine = true;
         }
-        newInput += ch;
+        else
+        {
+            newInput += ch;
+        }
+    }
+    if (newLine)
+    {
+        message(Qmsg);
+        editor->clear();
+        editor->insertPlainText(QString::fromStdString(newInput));
+        return;
     }
 }
 
@@ -402,5 +415,6 @@ void MainWindow::open()
         }
         file.close();
     }
+    alreadyAccepted = {"","","","","","","","","",""};
     message("The most recent saved file has been opened!         ");
 }
