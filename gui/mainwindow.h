@@ -26,7 +26,7 @@ private slots:
     void inputtest();
     void consoletest();
     void onButtonClicked();
-    void oneLine(QTextEdit *editor);
+    bool enterKey(QTextEdit *editor);
     void simulateRunButtonClick();
     void clearALL(QPushButton* clearButton);
     void settings();
@@ -39,9 +39,7 @@ private:
     QTimer* timer;
     SLR parser;
     CFG cfg;
-    int counter = 0;
     QVector<QString> datatypes = {"string","bool", "int", "char", "vector", "set","//","for","if","else","while"};
     QVector<QString> symbols = {"<",">","{","}","(",")"};
-    vector<string> alreadyAccepted = {"","","","","","","","","",""};
 };
 #endif // MAINWINDOW_H

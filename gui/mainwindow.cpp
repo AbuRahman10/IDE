@@ -8,13 +8,12 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QTextCursor>
-#include "../src/Lexer.h"
-#include "../src/CFG.h"
 #include "message.h"
 #include <QTimer>
 #include <QThread>
 #include <QMessageBox>
 #include "QDebug"
+#include "QKeyEvent"
 
 using namespace std;
 
@@ -23,9 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ofstream file("debug.txt");
-    file.clear();
-    file << "MainWindow called" << endl;
     ///////// FRAME /////////
     frames.push_back(ui->frame);
     frames.push_back(ui->frame_2);
@@ -60,9 +56,8 @@ MainWindow::MainWindow(QWidget *parent)
     ///////// LIVE EDITOR /////////
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(simulateRunButtonClick()));
-    timer->start(400);
-    file << "Timer called" << endl;
-    file.close();
+    timer->start(10);
+    ///////// PROPERTIES /////////
     this->setWindowTitle("IDE");
     setWindowIcon(QIcon("logo.png"));
     this->setStyleSheet("background-color: #49006d;");
@@ -75,57 +70,41 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "~MainWindow called" << endl;
-    file.close();
     delete ui;
 }
 
 void MainWindow::simulateRunButtonClick()
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "simulateRunButtonClick called" << endl;
-    file.close();
-    // Save the current cursor position for all editors
-    QVector<QTextCursor> originalCursors;
-    for (QTextEdit* editor : editors)
+    //////// SAVING CURSOR LOCATION ////////
+    vector<int> originalCursors;
+    for (QTextEdit *editor : editors)
     {
-        originalCursors.append(editor->textCursor());
+        originalCursors.push_back(editor->textCursor().position());
     }
     //////// INPUT CHECK ////////
     inputtest();
     //////// ONLY ONE LINE ////////
     for (int i = 0; i < editors.size(); ++i)
     {
-        oneLine(editors[i]);
-        // Set the cursor position to the end for each editor
+        if (enterKey(editors[i]))
+        {
+            originalCursors[i]--;
+        }
+        /////// SET ORIGINAL CURSOR LOCATION ///////
         QTextCursor cursor = editors[i]->textCursor();
-        cursor.movePosition(QTextCursor::End);
-        editors[i]->setTextCursor(cursor);
-    }
-    // Restore the cursor position to the end for all editors
-    for (int i = 0; i < editors.size(); ++i)
-    {
-        QTextCursor cursor = editors[i]->textCursor();
-        cursor.setPosition(originalCursors[i].position());
+        cursor.setPosition(originalCursors[i]);
         editors[i]->setTextCursor(cursor);
     }
 }
 
 void MainWindow::onButtonClicked()
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "onButtonClicked called" << endl;
-    file.close();
     ui->RUN->setChecked(false);
 }
 
 void MainWindow::inputtest()
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "inputtest called" << to_string(counter++) << endl;
-    file.close();
-    // INPUT
+    //////// INPUT AND CURSOR LOCATION ////////
     vector<QString> Qinputs;
     vector<string> inputs;
     for (QTextEdit *editor : editors)
@@ -144,7 +123,7 @@ void MainWindow::inputtest()
         bool accept = cfg.parse(get_tokens,parser);
         ///////// ACCEPTER /////////
         string inp = inputs[i];
-        if (accept or inp == "while (int i = 0 < -80) {int x;}")  // juiste syntax
+        if (accept)  // juiste syntax
         {
             ///////// FRAME /////////
             if (inp == "")
@@ -155,86 +134,77 @@ void MainWindow::inputtest()
             {
                 frames[i]->setStyleSheet("background-color: green;");
             }
-            if (alreadyAccepted[i] == inp)
+            ///////// COLOR /////////
+            string datatype;
+            QString text = QString::fromStdString(inp);
+            QTextCursor cursor = editors[i]->textCursor();
+            QTextCharFormat format;
+            editors[i]->clear();
+            for (int charIndex = 0; charIndex < text.length(); ++charIndex)
             {
-                continue;
-            }
-            else
-            {
-                alreadyAccepted[i] = inp;
-                ///////// COLOR /////////
-                string datatype;
-                QString text = QString::fromStdString(inp);
-                QTextCursor cursor = editors[i]->textCursor();
-                QTextCharFormat format;
-                editors[i]->clear();
-                for (int charIndex = 0; charIndex < text.length(); ++charIndex)
+                datatype += inp[charIndex];
+                QString Qdatatype = QString::fromStdString(datatype);
+                const QChar character = text.at(charIndex);
+                if (inp[0] == '/' and inp[1] == '/')
                 {
-                    datatype += inp[charIndex];
-                    QString Qdatatype = QString::fromStdString(datatype);
-                    const QChar character = text.at(charIndex);
-                    if (inp[0] == '/' and inp[1] == '/')
-                    {
-                        format.setForeground(Qt::gray);
-                        cursor.insertText(character, format);
-                        datatype.clear();
-                    }
-                    else if (datatypes.contains(QString::fromStdString(datatype)))
-                    {
-                        int datatypeSize = datatype.size()-1;
-                        int positionsToGoBack = charIndex - datatypeSize;
-                        cursor.setPosition(charIndex);
-                        cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
-                        cursor.removeSelectedText();
-                        editors[i]->setTextCursor(cursor);
-                        format.setForeground(QColor("#FF46D2"));
-                        cursor.insertText(Qdatatype, format);
-                        datatype.clear();
-                    }
-                    else if (character == '=')
-                    {
-                        format.setForeground(Qt::green);
-                        cursor.insertText("=", format);
-                    }
-                    else if (character == ';')
-                    {
-                        format.setForeground(QColor("#00FFF3"));
-                        cursor.insertText(";", format);
-                    }
-                    else if (character == '\"' or character == '\'')
-                    {
-                        format.setForeground(QColor("#FFFFFF"));
-                        cursor.insertText(character, format);
-                    }
-                    else if (character == '<' or character == '>')
-                    {
-                        format.setForeground(Qt::red);
-                        cursor.insertText(character, format);
-                        datatype.clear();
-                    }
-                    else if (character == '(' or character == ')')
-                    {
-                        format.setForeground(QColor("#FF9246"));
-                        cursor.insertText(character, format);
-                        datatype.clear();
-                    }
-                    else if (character == '{' or character == '}')
-                    {
-                        format.setForeground(QColor("#46FFA0"));
-                        cursor.insertText(character, format);
-                        datatype.clear();
-                    }
-                    else
-                    {
-                        format.setForeground(QColor("#ba8602"));
-                        cursor.insertText(character, format);
-                    }
+                    format.setForeground(Qt::gray);
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else if (datatypes.contains(QString::fromStdString(datatype)))
+                {
+                    int datatypeSize = datatype.size()-1;
+                    int positionsToGoBack = charIndex - datatypeSize;
+                    cursor.setPosition(charIndex);
+                    cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
+                    cursor.removeSelectedText();
+                    editors[i]->setTextCursor(cursor);
+                    format.setForeground(QColor("#FF46D2"));
+                    cursor.insertText(Qdatatype, format);
+                    datatype.clear();
+                }
+                else if (character == '=')
+                {
+                    format.setForeground(Qt::green);
+                    cursor.insertText("=", format);
+                }
+                else if (character == ';')
+                {
+                    format.setForeground(QColor("#00FFF3"));
+                    cursor.insertText(";", format);
+                }
+                else if (character == '\"' or character == '\'')
+                {
+                    format.setForeground(QColor("#FFFFFF"));
+                    cursor.insertText(character, format);
+                }
+                else if (character == '<' or character == '>')
+                {
+                    format.setForeground(Qt::red);
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else if (character == '(' or character == ')')
+                {
+                    format.setForeground(QColor("#FF9246"));
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else if (character == '{' or character == '}')
+                {
+                    format.setForeground(QColor("#46FFA0"));
+                    cursor.insertText(character, format);
+                    datatype.clear();
+                }
+                else
+                {
+                    format.setForeground(QColor("#ba8602"));
+                    cursor.insertText(character, format);
                 }
             }
         }
         else // foute syntax
         {
-            alreadyAccepted[i] = inp;
             ///////// FRAME /////////
             if (inp == "")
             {
@@ -265,9 +235,6 @@ void MainWindow::inputtest()
 
 void MainWindow::consoletest()
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "consoletest called" << endl;
-    file.close();
     // EXIT CODES
     QString exit0 = "Process finished with exit code 0";
     QString exit1 = "Process finished with exit code 1";
@@ -308,17 +275,12 @@ void MainWindow::consoletest()
     }
 }
 
-void MainWindow::oneLine(QTextEdit *editor)
+bool MainWindow::enterKey(QTextEdit *editor)
 {
-    ofstream file("debug.txt", std::ios::app);
-    file << "oneLine called" << endl;
-    file.close();
     bool newLine = false;
     QString qin = editor->toPlainText();
     string in = qin.toStdString();
     string newInput;
-    string msg = "Only 1 line is accepted as an input!         ";
-    QString Qmsg = QString::fromStdString(msg);
     for (char ch : in)
     {
         if (ch == '\n')
@@ -332,11 +294,10 @@ void MainWindow::oneLine(QTextEdit *editor)
     }
     if (newLine)
     {
-        message(Qmsg);
         editor->clear();
         editor->insertPlainText(QString::fromStdString(newInput));
-        return;
     }
+    return newLine;
 }
 
 void MainWindow::clearALL(QPushButton *clearButton)
@@ -401,9 +362,6 @@ void MainWindow::save()
 
 void MainWindow::open()
 {
-    ofstream file1("debug.txt", std::ios::app);
-    file1 << "open called" << endl;
-    file1.close();
     ifstream file("SavedFile.txt");
     if (file.is_open())
     {
@@ -415,6 +373,5 @@ void MainWindow::open()
         }
         file.close();
     }
-    alreadyAccepted = {"","","","","","","","","",""};
     message("The most recent saved file has been opened!         ");
 }
