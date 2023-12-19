@@ -86,7 +86,7 @@ void MainWindow::simulateRunButtonClick()
     //////// ONLY ONE LINE ////////
     for (int i = 0; i < editors.size(); ++i)
     {
-        if (enterKey(editors[i]))
+        if (enterKey(editors[i], frames[i]))
         {
             originalCursors[i]--;
         }
@@ -151,7 +151,7 @@ void MainWindow::inputtest()
                     cursor.insertText(character, format);
                     datatype.clear();
                 }
-                else if (datatypes.contains(QString::fromStdString(datatype)))
+                else if (typesNames.contains(QString::fromStdString(datatype)))
                 {
                     int datatypeSize = datatype.size()-1;
                     int positionsToGoBack = charIndex - datatypeSize;
@@ -163,6 +163,11 @@ void MainWindow::inputtest()
                     cursor.insertText(Qdatatype, format);
                     datatype.clear();
                 }
+                else if (character == ' ')
+                {
+                    cursor.insertText(" ", format);
+                    datatype.clear();
+                }
                 else if (character == '=')
                 {
                     format.setForeground(Qt::green);
@@ -172,10 +177,11 @@ void MainWindow::inputtest()
                 {
                     format.setForeground(QColor("#00FFF3"));
                     cursor.insertText(";", format);
+                    datatype.clear();
                 }
                 else if (character == '\"' or character == '\'')
                 {
-                    format.setForeground(QColor("#FFFFFF"));
+                    format.setForeground(QColor("#FF6100"));
                     cursor.insertText(character, format);
                 }
                 else if (character == '<' or character == '>')
@@ -186,13 +192,13 @@ void MainWindow::inputtest()
                 }
                 else if (character == '(' or character == ')')
                 {
-                    format.setForeground(QColor("#FF9246"));
+                    format.setForeground(Qt::white);
                     cursor.insertText(character, format);
                     datatype.clear();
                 }
                 else if (character == '{' or character == '}')
                 {
-                    format.setForeground(QColor("#46FFA0"));
+                    format.setForeground(QColor("#0051FF"));
                     cursor.insertText(character, format);
                     datatype.clear();
                 }
@@ -275,7 +281,7 @@ void MainWindow::consoletest()
     }
 }
 
-bool MainWindow::enterKey(QTextEdit *editor)
+bool MainWindow::enterKey(QTextEdit *editor, QFrame *frame)
 {
     bool newLine = false;
     QString qin = editor->toPlainText();
@@ -295,6 +301,7 @@ bool MainWindow::enterKey(QTextEdit *editor)
     if (newLine)
     {
         editor->clear();
+        frame->setStyleSheet("background-color: green;");
         editor->insertPlainText(QString::fromStdString(newInput));
     }
     return newLine;
