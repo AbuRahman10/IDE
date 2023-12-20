@@ -135,25 +135,27 @@ void MainWindow::inputtest()
                 frames[i]->setStyleSheet("background-color: green;");
             }
             ///////// COLOR /////////
-            string datatype;
+            bool isStrChar = false;
+            bool equalPassed = false;
+            string type;
             QString text = QString::fromStdString(inp);
             QTextCursor cursor = editors[i]->textCursor();
             QTextCharFormat format;
             editors[i]->clear();
             for (int charIndex = 0; charIndex < text.length(); ++charIndex)
             {
-                datatype += inp[charIndex];
-                QString Qdatatype = QString::fromStdString(datatype);
+                type += inp[charIndex];
+                QString Qdatatype = QString::fromStdString(type);
                 const QChar character = text.at(charIndex);
                 if (inp[0] == '/' and inp[1] == '/')
                 {
                     format.setForeground(Qt::gray);
                     cursor.insertText(character, format);
-                    datatype.clear();
+                    type.clear();
                 }
-                else if (typesNames.contains(QString::fromStdString(datatype)))
+                else if (typesNames.contains(QString::fromStdString(type)))
                 {
-                    int datatypeSize = datatype.size()-1;
+                    int datatypeSize = type.size() - 1;
                     int positionsToGoBack = charIndex - datatypeSize;
                     cursor.setPosition(charIndex);
                     cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
@@ -161,51 +163,78 @@ void MainWindow::inputtest()
                     editors[i]->setTextCursor(cursor);
                     format.setForeground(QColor("#FF46D2"));
                     cursor.insertText(Qdatatype, format);
-                    datatype.clear();
+                    type.clear();
+                    equalPassed = false;
                 }
                 else if (character == ' ')
                 {
                     cursor.insertText(" ", format);
-                    datatype.clear();
+                    if (!isStrChar)
+                    {
+                        type.clear();
+                    }
                 }
                 else if (character == '=')
                 {
                     format.setForeground(Qt::green);
                     cursor.insertText("=", format);
+                    equalPassed = true;
                 }
                 else if (character == ';')
                 {
                     format.setForeground(QColor("#00FFF3"));
                     cursor.insertText(";", format);
-                    datatype.clear();
+                    type.clear();
+                    equalPassed = false;
                 }
                 else if (character == '\"' or character == '\'')
                 {
                     format.setForeground(QColor("#FF6100"));
                     cursor.insertText(character, format);
+                    if (!isStrChar)
+                    {
+                        isStrChar = true;
+                    }
+                    else
+                    {
+                        isStrChar = false;
+                    }
                 }
                 else if (character == '<' or character == '>')
                 {
                     format.setForeground(Qt::red);
                     cursor.insertText(character, format);
-                    datatype.clear();
+                    type.clear();
                 }
                 else if (character == '(' or character == ')')
                 {
                     format.setForeground(Qt::white);
                     cursor.insertText(character, format);
-                    datatype.clear();
+                    type.clear();
                 }
                 else if (character == '{' or character == '}')
                 {
                     format.setForeground(QColor("#0051FF"));
                     cursor.insertText(character, format);
-                    datatype.clear();
+                    type.clear();
                 }
                 else
                 {
-                    format.setForeground(QColor("#ba8602"));
-                    cursor.insertText(character, format);
+                    if (isStrChar)
+                    {
+                        format.setForeground(QColor("#FBFF00"));
+                        cursor.insertText(character, format);
+                    }
+                    else if (isdigit(inp[charIndex]) and equalPassed and !isStrChar)
+                    {
+                        format.setForeground(QColor("#A951FB"));
+                        cursor.insertText(character, format);
+                    }
+                    else
+                    {
+                        format.setForeground(QColor("#d2a523"));
+                        cursor.insertText(character, format);
+                    }
                 }
             }
         }

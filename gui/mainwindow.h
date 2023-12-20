@@ -39,6 +39,6 @@ private:
     QTimer* timer;
     SLR parser;
     CFG cfg;
-    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false"};
+    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false","++","--"};
 };
 #endif // MAINWINDOW_H
