@@ -184,7 +184,10 @@ void MainWindow::inputtest()
                 {
                     format.setForeground(QColor("#00FFF3"));
                     cursor.insertText(";", format);
-                    type.clear();
+                    if (!isStrChar)
+                    {
+                        type.clear();
+                    }
                     equalPassed = false;
                 }
                 else if (character == '\"' or character == '\'')
@@ -204,19 +207,28 @@ void MainWindow::inputtest()
                 {
                     format.setForeground(Qt::red);
                     cursor.insertText(character, format);
-                    type.clear();
+                    if (!isStrChar)
+                    {
+                        type.clear();
+                    }
                 }
                 else if (character == '(' or character == ')')
                 {
                     format.setForeground(Qt::white);
                     cursor.insertText(character, format);
-                    type.clear();
+                    if (!isStrChar)
+                    {
+                        type.clear();
+                    }
                 }
                 else if (character == '{' or character == '}')
                 {
                     format.setForeground(QColor("#0051FF"));
                     cursor.insertText(character, format);
-                    type.clear();
+                    if (!isStrChar)
+                    {
+                        type.clear();
+                    }
                 }
                 else
                 {
