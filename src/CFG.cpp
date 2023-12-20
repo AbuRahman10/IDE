@@ -101,6 +101,7 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
         return true;
     }
     string dataType;
+    string keyword;
     string data_structure;
     input.clear();
     input.reserve(tokens.size());
@@ -117,6 +118,11 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
         if(token.typeToString() == "D"){
             dataType = token.word;
         }
+        if(token.typeToString() == "K"){
+            if(token.word == "if") {keyword = "if";}
+            else if(token.word == "else if") {keyword = "else if";}
+            else {keyword == "else";}
+        }
         if(token.typeToString() == "N"){
             std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
             if(regex_match(token.word,pattern)){
@@ -128,6 +134,9 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
             if(dataType == "int"){
                 if(regex_match(token.word,integer)){
                     input.emplace_back("[+-]?[0-9]+");
+                }
+                else if(keyword == "else if" && (token.word == "true" || token.word == "false")){
+                    input.emplace_back(token.word);
                 }
             }else if(dataType == "string"){
                 if(regex_match(token.word,str) || token.word.empty()){

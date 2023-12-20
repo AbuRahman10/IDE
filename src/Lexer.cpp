@@ -208,6 +208,7 @@ Token Lexer::lexIdentifierOrKeyword() {
         } else {
             // It was just 'else', reset the pointer
             char_pointer = savedCharPointer;
+            return {Token::KEYWORD, identifier, this->line, this->column};
         }
     }
         // loops and control-statement
