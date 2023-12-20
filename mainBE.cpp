@@ -5,7 +5,7 @@
 #include <sstream>
 #include "src/Lexer.h"
 int main() {
-    string code = "if(true){}else_if(true){}else{}";
+    string code = "if(int i = 10 < 12 ){} else if(int i = 10 < 13){} else{int i = 0;}";
     Lexer ome (code);
     auto get = ome.tokenize();
     CFG some("grammar.json");

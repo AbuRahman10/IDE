@@ -30,6 +30,8 @@ struct Token {
                 return "E";
             case ERROR:
                 return "X";
+            case KEYWORD:
+                return "K";
             default:
                 return "false";
         }

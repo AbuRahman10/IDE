@@ -3,10 +3,11 @@
 //
 
 #include "Lexer.h"
-
 Token Lexer::lexNumber() {
     std::string number;
     bool hasDecimalPoint = false;
+    // identify if it start with number then char cause then it's a declaration_name
+    int startCharPointer = char_pointer;
 
     // Handle negative numbers
     if (code[char_pointer] == '-' && isdigit(code[char_pointer + 1])) {
@@ -32,7 +33,16 @@ Token Lexer::lexNumber() {
         }
     }
 
-    return {Token::VALUE, number, this->line, this->column};
+    // Check if the number is immediately followed by an alphanumeric character or underscore cause then this will be a declaration_name
+    if (isalnum(code[char_pointer]) || code[char_pointer] == '_') {
+        std::string declarationName = number;
+        // get the whole word out
+        while (isalnum(code[char_pointer]) || code[char_pointer] == '_') {
+            declarationName += code[char_pointer++];
+        }
+        return {Token::DECLARATION_NAME, declarationName, this->line, this->column};
+        }
+    return {Token::VALUE,number,this->line,this->column};
 }
 
 Token Lexer::lexString() {
@@ -173,21 +183,44 @@ Token Lexer::lexIdentifierOrKeyword() {
     }
     // datatype
     if (isKeyword(identifier)) {
-        return {Token::DATATYPE, identifier,this->line,this->column};
+        return {Token::DATATYPE, identifier, this->line, this->column};
     }
-    // values
-    else if (identifier == "true"|| identifier == "false"){
-        return {Token::VALUE,identifier,this->line,this->column};
+        // values
+    else if (identifier == "true" || identifier == "false") {
+        return {Token::VALUE, identifier, this->line, this->column};
     }
-    // loops en control-statement
-    else if (identifier == "while" || identifier == "if" || identifier == "else" || identifier == "else_if"){
-        return { Token::KEYWORD,identifier,this->line,this->column};
+    else if (identifier == "else") {
+        // Save the current position
+        int savedCharPointer = char_pointer;
+        // tussenin kunnen er white spaces zijn dus skip
+        while (isspace(code[char_pointer])) {
+            char_pointer++;
+        }
+        // Check if 'if' comes after 'else'
+        std::string getnextWord;
+        while (isalnum(code[char_pointer])) {
+            getnextWord += code[char_pointer++];
+        }
+        if (getnextWord == "if") {
+            // 'else if' herkend door onze lexer
+            identifier += " " + getnextWord;
+            return {Token::KEYWORD, identifier, this->line, this->column};
+        } else {
+            // It was just 'else', reset the pointer
+            char_pointer = savedCharPointer;
+            return {Token::KEYWORD, identifier, this->line, this->column};
+        }
     }
-        // aka variable naam
+        // loops and control-statement
+    else if (identifier == "while" || identifier == "if") {
+        return {Token::KEYWORD, identifier, this->line, this->column};
+    }
+        // variable name
     else {
-        return {Token::DECLARATION_NAME, identifier,this->line,this->column};
+        return {Token::DECLARATION_NAME, identifier, this->line, this->column};
     }
 }
+
 
 std::vector<Token> Lexer::tokenize() noexcept {
     std::vector<Token> tokens;
