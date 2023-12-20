@@ -135,7 +135,8 @@ void MainWindow::inputtest()
                 frames[i]->setStyleSheet("background-color: green;");
             }
             ///////// COLOR /////////
-            bool isStrChar = false;
+            bool stringPassed = false;
+            bool charPassed = false;
             bool equalPassed = false;
             string type;
             QString text = QString::fromStdString(inp);
@@ -153,6 +154,11 @@ void MainWindow::inputtest()
                     cursor.insertText(character, format);
                     type.clear();
                 }
+                else if (charIndex > 1 and (character == '\\' or text.at(charIndex-1) == '\\'))
+                {
+                    format.setForeground(Qt::green);
+                    cursor.insertText(character, format);
+                }
                 else if (typesNames.contains(QString::fromStdString(type)))
                 {
                     int datatypeSize = type.size() - 1;
@@ -166,78 +172,76 @@ void MainWindow::inputtest()
                     type.clear();
                     equalPassed = false;
                 }
-                else if (character == ' ')
+                else if (character == ' ' and (!stringPassed and !charPassed))
                 {
                     cursor.insertText(" ", format);
-                    if (!isStrChar)
-                    {
-                        type.clear();
-                    }
+                    type.clear();
                 }
-                else if (character == '=')
+                else if (character == '=' and (!stringPassed and !charPassed))
                 {
                     format.setForeground(Qt::green);
                     cursor.insertText("=", format);
                     equalPassed = true;
                 }
-                else if (character == ';')
+                else if (character == ';' and (!stringPassed and !charPassed))
                 {
                     format.setForeground(QColor("#00FFF3"));
                     cursor.insertText(";", format);
-                    if (!isStrChar)
-                    {
-                        type.clear();
-                    }
+                    type.clear();
                     equalPassed = false;
                 }
-                else if (character == '\"' or character == '\'')
+                else if (character == '\"' and !charPassed)
                 {
                     format.setForeground(QColor("#FF6100"));
                     cursor.insertText(character, format);
-                    if (!isStrChar)
+                    if (!stringPassed)
                     {
-                        isStrChar = true;
+                        stringPassed = true;
                     }
                     else
                     {
-                        isStrChar = false;
+                        stringPassed = false;
                     }
                 }
-                else if (character == '<' or character == '>')
+                else if (character == '\'' and !stringPassed)
+                {
+                    format.setForeground(QColor("#FF6100"));
+                    cursor.insertText(character, format);
+                    if (!charPassed)
+                    {
+                        charPassed = true;
+                    }
+                    else
+                    {
+                        charPassed = false;
+                    }
+                }
+                else if ((character == '<' or character == '>') and (!stringPassed and !charPassed))
                 {
                     format.setForeground(Qt::red);
                     cursor.insertText(character, format);
-                    if (!isStrChar)
-                    {
-                        type.clear();
-                    }
+                    type.clear();
                 }
-                else if (character == '(' or character == ')')
+                else if ((character == '(' or character == ')') and (!stringPassed and !charPassed))
                 {
                     format.setForeground(Qt::white);
                     cursor.insertText(character, format);
-                    if (!isStrChar)
-                    {
-                        type.clear();
-                    }
+                    type.clear();
                 }
-                else if (character == '{' or character == '}')
+                else if (character == '{' or character == '}' and (!stringPassed and !charPassed))
                 {
                     format.setForeground(QColor("#0051FF"));
                     cursor.insertText(character, format);
-                    if (!isStrChar)
-                    {
-                        type.clear();
-                    }
+                    type.clear();
                 }
                 else
                 {
-                    if (isStrChar)
+                    if (stringPassed or charPassed)
                     {
                         format.setForeground(QColor("#FBFF00"));
                         cursor.insertText(character, format);
                     }
-                    else if (isdigit(inp[charIndex]) and equalPassed and !isStrChar)
+                    else if (isdigit(inp[charIndex]) and equalPassed and !stringPassed)
                     {
                         format.setForeground(QColor("#A951FB"));
                         cursor.insertText(character, format);
