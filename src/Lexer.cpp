@@ -180,7 +180,7 @@ Token Lexer::lexIdentifierOrKeyword() {
         return {Token::VALUE,identifier,this->line,this->column};
     }
     // loops en control-statement
-    else if (identifier == "while" || identifier == "if" || identifier == "else"){
+    else if (identifier == "while" || identifier == "if" || identifier == "else" || identifier == "else_if"){
         return { Token::KEYWORD,identifier,this->line,this->column};
     }
         // aka variable naam

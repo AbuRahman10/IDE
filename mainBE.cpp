@@ -5,10 +5,10 @@
 #include <sstream>
 #include "src/Lexer.h"
 int main() {
-    string code = "int i = 0;";
+    string code = "if(true){}else_if(true){}else{}";
     Lexer ome (code);
     auto get = ome.tokenize();
-    CFG some;
+    CFG some("grammar.json");
     SLR slr = some.createTable();
     cout << some.parse(get,slr);
     return 0;
