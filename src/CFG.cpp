@@ -104,7 +104,7 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
     string data_structure;
     input.clear();
     input.reserve(tokens.size());
-    regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
+    //regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
     regex integer("[+-]?[0-9]+");
     // has to be raw cuz of escape sequence
     regex str("\".*?\"");
@@ -118,9 +118,9 @@ bool CFG::parse(vector<Token> &tokens, SLR &parser)
             dataType = token.word;
         }
         if(token.typeToString() == "N"){
-            std::regex pattern("[a-zA-Z][a-zA-Z0-9_]*");
+            std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
             if(regex_match(token.word,pattern)){
-                input.emplace_back("[a-zA-Z][a-zA-Z0-9_]*");
+                input.emplace_back("[a-zA-Z_][a-zA-Z0-9_]*");
             } else{
                 input.emplace_back(token.word);
             }
