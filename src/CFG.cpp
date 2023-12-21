@@ -109,7 +109,7 @@ bool CFG::parse(vector<vector<Token>> &token, SLR &parser) {
         //regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
         regex integer("[+-]?[0-9]+");
         // has to be raw cuz of escape sequence
-        regex str("\".*?\"");
+        regex str(R"("(?:\.|[^\'])*")");
         // has to be raw cuz of escape sequence
         regex ch("'(?:\\.|[^\\'])'");
         regex ch1("'[0-9]+'");
@@ -141,7 +141,10 @@ bool CFG::parse(vector<vector<Token>> &token, SLR &parser) {
                 }else if(dataType == "string"){
                     if(regex_match(t.word, str) || t.word.empty()){
                         // has to be raw cuz of escape sequence
-                        input.emplace_back("\".*?\"");
+                        input.emplace_back(R"("(?:\.|[^\'])*")");
+                    }
+                    else {
+                        input.emplace_back(t.word);
                     }
                 } else if(dataType == "char"){
                     if(regex_match(t.word, ch)){
@@ -149,6 +152,27 @@ bool CFG::parse(vector<vector<Token>> &token, SLR &parser) {
                         input.emplace_back("'(?:\\.|[^\\'])'");
                     }else if(regex_match(t.word, ch1)){
                         input.emplace_back("'[0-9]+'");
+                    }else if (t.word == "\n"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\t"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\r"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\b"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\f"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\a"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\v"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if (t.word == "\?"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }else if(t.word == "\0"){
+                        input.emplace_back("'(?:\\.|[^\\'])'");
+                    }
+                    else {
+                        input.emplace_back(t.word);
                     }
                 } else if (dataType == "bool"){
                     input.emplace_back(t.word);
