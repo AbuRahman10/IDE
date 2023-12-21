@@ -94,8 +94,7 @@ const std::vector<std::string> &CFG::getTerminals() const {
     return terminals;
 }
 
-bool CFG::parse(vector<vector<Token>> &token, SLR &parser)
-{
+bool CFG::parse(vector<vector<Token>> &token, SLR &parser) {
     bool accept = false;
     if(token.empty()){
         return true;
@@ -112,7 +111,7 @@ bool CFG::parse(vector<vector<Token>> &token, SLR &parser)
         // has to be raw cuz of escape sequence
         regex str("\".*?\"");
         // has to be raw cuz of escape sequence
-        regex ch(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
+        regex ch("'(?:\\.|[^\\'])'");
         regex ch1("'[0-9]+'");
         for (const Token& t : tokens)
         {
@@ -147,7 +146,7 @@ bool CFG::parse(vector<vector<Token>> &token, SLR &parser)
                 } else if(dataType == "char"){
                     if(regex_match(t.word, ch)){
                         // has to be raw cuz of escape sequence
-                        input.emplace_back(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
+                        input.emplace_back("'(?:\\.|[^\\'])'");
                     }else if(regex_match(t.word, ch1)){
                         input.emplace_back("'[0-9]+'");
                     }

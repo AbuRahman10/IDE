@@ -14,6 +14,6 @@ int main() {
     ome.print();
     CFG some("grammar.json");
     SLR slr = some.createTable();
-    cout << some.parse(get,slr);
+    cout << boolalpha << some.parse(get,slr);
     return 0;
 }

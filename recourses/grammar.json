@@ -1,8 +1,8 @@
 {
-  "Variables": ["S","DECLARATION","INITIALISATION","LOOP","STATEMENT","if_condition","else_condition","else_if_condition"],
-  "Terminals": ["{","}",")","(","while","set",">","<","vector","string","char","int",";","=","[+-]?[0-9]+","'(\\s*[a-zA-Z0-9_]+\\s*|\\s+)'","[a-zA-Z_][a-zA-Z0-9_]*","\".*?\"","bool","true","false","0","1","'[0-9]+'","if","else", "else if"],
+  "Variables": ["S","DECLARATION","INITIALISATION","LOOP","STATEMENT","if_condition","else_condition"],
+  "Terminals": ["{","}",")","(","while","set",">","<","vector","string","char","int",";","=","[+-]?[0-9]+","'(?:\\.|[^\\'])'","[a-zA-Z_][a-zA-Z0-9_]*","\".*?\"","bool","true","false","0","1","'[0-9]+'","if","else", "else if"],
   "Productions": [
-    {"head": "S", "body": ["DECLARATION",";"]}, {"head": "S", "body": ["INITIALISATION",";"]},{"head":"S","body": ["LOOP"]},{"head":"S","body": ["if_condition"]}, {"head":"S","body": ["else_condition"]}, {"head":"S","body": ["else_if_condition"]},
+    {"head": "S", "body": ["DECLARATION",";"]}, {"head": "S", "body": ["INITIALISATION",";"]},{"head":"S","body": ["LOOP"]},{"head":"S","body": ["if_condition"]}, {"head":"S","body": ["else_condition"]},
 
     {"head": "DECLARATION", "body": ["string","[a-zA-Z_][a-zA-Z0-9_]*"]},
     {"head": "DECLARATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*"]},
@@ -20,16 +20,17 @@
     {"head": "DECLARATION","body": ["set","<","int",">","[a-zA-Z_][a-zA-Z0-9_]*"]},
     {"head": "DECLARATION","body": ["set","<","bool",">","[a-zA-Z_][a-zA-Z0-9_]*"]},
 
-    {"head": "INITIALISATION", "body": ["string", "[a-zA-Z_][a-zA-Z0-9_]*", "=","\".*?\""]},
+    {"head": "INITIALISATION", "body": ["string", "[a-zA-Z_][a-zA-Z0-9_]*","=","\".*?\""]},
     {"head": "INITIALISATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+"]},
 
-    {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(\\s*[a-zA-Z0-9_]+\\s*|\\s+)'"]},
+    {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'"]},
     {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'"]},
 
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z_][a-zA-Z0-9_]*","=","true"]},
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z_][a-zA-Z0-9_]*","=","false"]},
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z_][a-zA-Z0-9_]*","=","0"]},
     {"head": "INITIALISATION", "body": ["bool","[a-zA-Z_][a-zA-Z0-9_]*","=","1"]},
+
     {"head": "LOOP","body":["while","(","true",")","{","}"]},
     {"head": "LOOP","body":["while","(","true",")","{","STATEMENT","}"]},
     {"head": "LOOP","body":["while","(","false",")","{","}"]},
@@ -38,8 +39,10 @@
     {"head": "LOOP","body":["while","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+","<","[+-]?[0-9]+",")","{","STATEMENT","}"]},
     {"head": "LOOP","body":["while","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","}"]},
     {"head": "LOOP","body":["while","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","STATEMENT","}"]},
+
     {"head": "STATEMENT","body":["S"]},
     {"head": "STATEMENT","body":["STATEMENT","S"]},
+
     {"head": "if_condition","body":["if","(","true",")","{","}"]},
     {"head": "if_condition","body":["if","(","true",")","{","STATEMENT","}"]},
     {"head": "if_condition","body":["if","(","false",")","{","}"]},
@@ -48,18 +51,23 @@
     {"head": "if_condition","body":["if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+","<","[+-]?[0-9]+",")","{","STATEMENT","}"]},
     {"head": "if_condition","body":["if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","}"]},
     {"head": "if_condition","body":["if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","STATEMENT","}"]},
+
     {"head": "else_condition","body":["if_condition","else","{","}"]},
     {"head": "else_condition","body":["if_condition","else","{","STATEMENT","}"]},
-    {"head": "else_condition","body":["else_if_condition","else","{","}"]},
-    {"head": "else_condition","body":["else_if_condition","else","{","STATEMENT","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","true",")","{","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","true",")","{","STATEMENT","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","false",")","{","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","false",")","{","STATEMENT","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+","<","[+-]?[0-9]+",")","{","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+","<","[+-]?[0-9]+",")","{","STATEMENT","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","}"]},
-    {"head": "else_if_condition","body":["if_condition","else if","(","int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+",">","[+-]?[0-9]+",")","{","STATEMENT","}"]}
+
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'","<","'(?:\\.|[^\\'])'",")","{","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'","<","'(?:\\.|[^\\'])'",")","{","STATEMENT","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'",">","'(?:\\.|[^\\'])'",")","{","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'",">","'(?:\\.|[^\\'])'",")","{","STATEMENT","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'","<","'[0-9]+'",")","{","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'","<","'[0-9]+'",")","{","STATEMENT","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'",">","'[0-9]+'",")","{","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'",">","'[0-9]+'",")","{","STATEMENT","}"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'","<","'[0-9]+'",")",";"]},
+    {"head": "LOOP","body":["while","(","char","[a-zA-Z_][a-zA-Z0-9_]*","=","'[0-9]+'",">","'[0-9]+'",")",";"]}
+
+
+
   ],
   "Start": "S"
 }

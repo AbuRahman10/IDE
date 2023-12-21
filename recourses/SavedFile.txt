@@ -1,9 +1,1 @@
-while(int i = 0 < 5){
-    while(true){
-        while(true){
-            if(true){
-                vector<int> a;}
-            else{}
-        }
-        }
- }
+while (char a = 'b' < 'a');
