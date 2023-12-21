@@ -47,7 +47,7 @@ public:
 
     void print();
 
-    bool parse(vector<Token> &tokens, SLR &parser);
+    bool parse(vector<vector<Token>> &token, SLR &parser);
 
     SLR createTable();
 };

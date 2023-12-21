@@ -12,6 +12,7 @@
 #include <vector>
 #include <set>
 #include "string"
+#include "stack"
 struct Token {
     enum Type {DATATYPE, DECLARATION_NAME, VALUE, OPERATOR, PUNCTUATION, END_OF_FILE, ERROR,BRACKETS,PARENTHESIS,NEWLINE,SQUARE_BRACKETS,KEYWORD};
     std::string typeToString() const{
@@ -59,10 +60,15 @@ private:
     inline bool isKeyword(const std::string& str) const;
     inline void skipSingleLineComment();
     inline void skipMultiLineComment();
+    std::vector<std::vector<Token>> statements;
+    std::stack<char> parenthesis;
+    bool else_if_exits = false;
+    bool if_exits = false;
 public:
     Lexer(std::string  source) : code(std::move(source)), char_pointer(0) {}
 
-    [[nodiscard]] std::vector<Token>tokenize() noexcept;
+    [[nodiscard]] std::vector<std::vector<Token>>tokenize() noexcept;
+    void print();
 
 };
 

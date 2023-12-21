@@ -142,6 +142,29 @@ Token Lexer::lexOperatorOrPunctuation() {
     } else if (tokenValue == "(" || tokenValue == ")") {
         return {Token::BRACKETS, tokenValue, this->line, this->column};
     } else if (tokenValue == "{" || tokenValue == "}") {
+        //parenthesis stack
+        if(tokenValue == "{") {parenthesis.push('{');}
+        else{
+            parenthesis.pop();
+            int savedCharPointer = char_pointer;
+            // tussenin kunnen er white spaces zijn dus skip
+            while (isspace(code[char_pointer])) {
+                char_pointer++;
+            }
+            // Check if 'if' comes after 'else'
+            std::string getnextWord;
+            while (isalnum(code[char_pointer])) {
+                getnextWord += code[char_pointer++];
+            }
+            if (getnextWord == "else" && if_exits) {
+                // 'else if' herkend door onze lexer
+                else_if_exits = true;
+                char_pointer = savedCharPointer;
+            } else {
+                // It was just 'else', reset the pointer
+                char_pointer = savedCharPointer;
+            }
+        }
         return {Token::PARENTHESIS, tokenValue, this->line, this->column};
     }else if(tokenValue == "[" || tokenValue == "]"){
         return {Token::SQUARE_BRACKETS,tokenValue,this->line,this->column};
@@ -189,30 +212,9 @@ Token Lexer::lexIdentifierOrKeyword() {
     else if (identifier == "true" || identifier == "false") {
         return {Token::VALUE, identifier, this->line, this->column};
     }
-    else if (identifier == "else") {
-        // Save the current position
-        int savedCharPointer = char_pointer;
-        // tussenin kunnen er white spaces zijn dus skip
-        while (isspace(code[char_pointer])) {
-            char_pointer++;
-        }
-        // Check if 'if' comes after 'else'
-        std::string getnextWord;
-        while (isalnum(code[char_pointer])) {
-            getnextWord += code[char_pointer++];
-        }
-        if (getnextWord == "if") {
-            // 'else if' herkend door onze lexer
-            identifier += " " + getnextWord;
-            return {Token::KEYWORD, identifier, this->line, this->column};
-        } else {
-            // It was just 'else', reset the pointer
-            char_pointer = savedCharPointer;
-            return {Token::KEYWORD, identifier, this->line, this->column};
-        }
-    }
         // loops and control-statement
-    else if (identifier == "while" || identifier == "if") {
+    else if (identifier == "while" || identifier == "if" || identifier == "else") {
+        if(identifier == "if"){if_exits = true;}
         return {Token::KEYWORD, identifier, this->line, this->column};
     }
         // variable name
@@ -222,13 +224,14 @@ Token Lexer::lexIdentifierOrKeyword() {
 }
 
 
-std::vector<Token> Lexer::tokenize() noexcept {
+std::vector<std::vector<Token>> Lexer::tokenize() noexcept {
     std::vector<Token> tokens;
     while (char_pointer < code.length()) {
+        else_if_exits = false;
         const char current = code[char_pointer];
         if (isspace(current)) {
             if (current == '\n') {
-                tokens.emplace_back(Token::NEWLINE, "newline",this->line,this->column);
+                //tokens.emplace_back(Token::NEWLINE, "newline",this->line,this->column);
                 this->line++;
                 this->column = 0;
                 char_pointer++;
@@ -258,7 +261,12 @@ std::vector<Token> Lexer::tokenize() noexcept {
             tokens.push_back(lexIdentifierOrKeyword());
             this->column++;
         } else {
-            tokens.push_back(lexOperatorOrPunctuation());
+            Token t = lexOperatorOrPunctuation();
+            tokens.push_back(t);
+            if(((t.word == ";" && parenthesis.empty()) || (t.word == "}" && parenthesis.empty())) && !else_if_exits){
+                statements.push_back(tokens);
+                tokens.clear();
+            }
             this->column++;
         }
     }
@@ -268,5 +276,18 @@ std::vector<Token> Lexer::tokenize() noexcept {
         tokens.emplace_back(Token::ERROR,"empty file",this->line,this->column);
         return tokens;
     }*/
-    return tokens;
+    if(!tokens.empty()){
+        statements.push_back(tokens);
+    }
+    return statements;
+}
+
+void Lexer::print() {
+    for(auto i : statements){
+        for(auto j : i){
+            std::cout << j.word << " ";
+        }
+        std::cout << std::endl;
+    }
+
 }

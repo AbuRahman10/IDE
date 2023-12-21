@@ -5,9 +5,13 @@
 #include <sstream>
 #include "src/Lexer.h"
 int main() {
-    string code = "if(int i = 10 < 12 ){} else if(int i = 10 < 13){} else{int i = 0;}";
+    ifstream input("SavedFile.txt");
+    stringstream buffer;
+    buffer << input.rdbuf();
+    string code = buffer.str();
     Lexer ome (code);
     auto get = ome.tokenize();
+    ome.print();
     CFG some("grammar.json");
     SLR slr = some.createTable();
     cout << some.parse(get,slr);

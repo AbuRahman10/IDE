@@ -94,77 +94,78 @@ const std::vector<std::string> &CFG::getTerminals() const {
     return terminals;
 }
 
-bool CFG::parse(vector<Token> &tokens, SLR &parser)
+bool CFG::parse(vector<vector<Token>> &token, SLR &parser)
 {
-    vector<string> input;
-    if(tokens.empty()){
+    bool accept = false;
+    if(token.empty()){
         return true;
     }
-    string dataType;
-    string keyword;
-    string data_structure;
-    input.clear();
-    input.reserve(tokens.size());
-    //regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
-    regex integer("[+-]?[0-9]+");
-    // has to be raw cuz of escape sequence
-    regex str("\".*?\"");
-    // has to be raw cuz of escape sequence
-    regex ch(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
-    regex ch1("'[0-9]+'");
-    for (const Token& token : tokens)
-    {
-        string checking_token = token.word;
-        if(token.typeToString() == "D"){
-            dataType = token.word;
-        }
-        if(token.typeToString() == "K"){
-            if(token.word == "if") {keyword = "if";}
-            else if(token.word == "else if") {keyword = "else if";}
-            else {keyword == "else";}
-        }
-        if(token.typeToString() == "N"){
-            std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
-            if(regex_match(token.word,pattern)){
-                input.emplace_back("[a-zA-Z_][a-zA-Z0-9_]*");
-            } else{
-                input.emplace_back(token.word);
+    for (const auto& tokens: token) {
+        vector<string> input;
+        string dataType;
+        string keyword;
+        string data_structure;
+        input.clear();
+        input.reserve(tokens.size());
+        //regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
+        regex integer("[+-]?[0-9]+");
+        // has to be raw cuz of escape sequence
+        regex str("\".*?\"");
+        // has to be raw cuz of escape sequence
+        regex ch(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
+        regex ch1("'[0-9]+'");
+        for (const Token& t : tokens)
+        {
+            string checking_token = t.word;
+            if(t.typeToString() == "D"){
+                dataType = t.word;
             }
-        } else if(token.typeToString() == "V"){
-            if(dataType == "int"){
-                if(regex_match(token.word,integer)){
-                    input.emplace_back("[+-]?[0-9]+");
+            if(t.typeToString() == "K"){
+                if(t.word == "if") { keyword = "if";}
+                else if(t.word == "while") { keyword = "while";}
+            }
+            if(t.typeToString() == "N"){
+                std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*");
+                if(regex_match(t.word, pattern)){
+                    input.emplace_back("[a-zA-Z_][a-zA-Z0-9_]*");
+                } else{
+                    input.emplace_back(t.word);
                 }
-                else if(keyword == "else if" && (token.word == "true" || token.word == "false")){
-                    input.emplace_back(token.word);
+            } else if(t.typeToString() == "V"){
+                if(dataType == "int"){
+                    if(regex_match(t.word, integer)){
+                        input.emplace_back("[+-]?[0-9]+");
+                    }
+                    else if((keyword == "if" || keyword == "while") && (t.word == "true" || t.word == "false")){
+                        input.emplace_back(t.word);
+                    }
+                }else if(dataType == "string"){
+                    if(regex_match(t.word, str) || t.word.empty()){
+                        // has to be raw cuz of escape sequence
+                        input.emplace_back("\".*?\"");
+                    }
+                } else if(dataType == "char"){
+                    if(regex_match(t.word, ch)){
+                        // has to be raw cuz of escape sequence
+                        input.emplace_back(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
+                    }else if(regex_match(t.word, ch1)){
+                        input.emplace_back("'[0-9]+'");
+                    }
+                } else if (dataType == "bool"){
+                    input.emplace_back(t.word);
                 }
-            }else if(dataType == "string"){
-                if(regex_match(token.word,str) || token.word.empty()){
-                    // has to be raw cuz of escape sequence
-                    input.emplace_back("\".*?\"");
+                else{
+                    input.push_back(t.word);
                 }
-            } else if(dataType == "char"){
-                if(regex_match(token.word,ch)){
-                    // has to be raw cuz of escape sequence
-                    input.emplace_back(R"('(\s*[a-zA-Z0-9_]+\s*|\s+)')");
-                }else if(regex_match(token.word,ch1)){
-                    input.emplace_back("'[0-9]+'");
-                }
-            } else if (dataType == "bool"){
-                input.emplace_back(token.word);
             }
             else{
-                input.push_back(token.word);
+                input.push_back(t.word);
             }
         }
-        else{
-
-            input.push_back(token.word);
-        }
+        input.emplace_back("$");
+        pair<vector<string>,vector<string>> stack_value = {{"0"},input};
+        accept = parser.slr_parsing(input,stack_value);
     }
-    input.emplace_back("$");
-    pair<vector<string>,vector<string>> stack_value = {{"0"},input};
-    bool accept = parser.slr_parsing(input,stack_value);
     return accept;
 }
 

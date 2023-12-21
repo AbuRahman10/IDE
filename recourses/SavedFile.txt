@@ -1,3 +1,9 @@
-while(true){
-    int i = 0;
-}
+while(int i = 0 < 5){
+    while(true){
+        while(true){
+            if(true){
+                vector<int> a;}
+            else{}
+        }
+        }
+ }
