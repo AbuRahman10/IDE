@@ -110,7 +110,7 @@ vector<tuple<std::string, int, bool>> CFG::parse(vector<vector<Token>> &token, S
         //regex identifier("[a-zA-Z][a-zA-Z0-9_]*");
         regex integer("[+-]?[0-9]+");
         // has to be raw cuz of escape sequence
-        regex str(R"("(?:\.|[^\'])*")");
+        regex str(R"("(?:\\.|[^"\\])*")");
         // has to be raw cuz of escape sequence
         regex ch("'(?:\\.|[^\\'])'");
         regex ch1("'[0-9]+'");
@@ -146,8 +146,8 @@ vector<tuple<std::string, int, bool>> CFG::parse(vector<vector<Token>> &token, S
                 }else if(dataType == "string"){
                     if(regex_match(t.word, str) || t.word.empty()){
                         // has to be raw cuz of escape sequence
-                        input.emplace_back(R"("(?:\.|[^\'])*")",t.pos);
-                        stack_input.emplace_back(R"("(?:\.|[^\'])*")");
+                        input.emplace_back(R"("(?:\\.|[^"\\])*")",t.pos);
+                        stack_input.emplace_back(R"("(?:\\.|[^"\\])*")");
                     }
                     else {
                         input.emplace_back(t.word,t.pos);

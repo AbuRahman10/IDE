@@ -1,6 +1,6 @@
 {
   "Variables": ["S","DECLARATION","INITIALISATION","LOOP","STATEMENT","if_condition","else_condition"],
-  "Terminals": ["{","}",")","(","while","set",">","<","vector","string","char","int",";","=","[+-]?[0-9]+","'(?:\\.|[^\\'])'","[a-zA-Z_][a-zA-Z0-9_]*","\"(?:\\.|[^\\'])*\"","bool","true","false","0","1","'[0-9]+'","if","else", "else if"],
+  "Terminals": ["{","}",")","(","while","set",">","<","vector","string","char","int",";","=","[+-]?[0-9]+","'(?:\\.|[^\\'])'","[a-zA-Z_][a-zA-Z0-9_]*","\"(?:\\\\.|[^\"\\\\])*\"","bool","true","false","0","1","'[0-9]+'","if","else", "else if"],
   "Productions": [
     {"head": "S", "body": ["DECLARATION",";"]}, {"head": "S", "body": ["INITIALISATION",";"]},{"head":"S","body": ["LOOP"]},{"head":"S","body": ["if_condition"]}, {"head":"S","body": ["else_condition"]},
 
@@ -20,7 +20,7 @@
     {"head": "DECLARATION","body": ["set","<","int",">","[a-zA-Z_][a-zA-Z0-9_]*"]},
     {"head": "DECLARATION","body": ["set","<","bool",">","[a-zA-Z_][a-zA-Z0-9_]*"]},
 
-    {"head": "INITIALISATION", "body": ["string","[a-zA-Z_][a-zA-Z0-9_]*","=","\"(?:\\.|[^\\'])*\""]},
+    {"head": "INITIALISATION", "body": ["string","[a-zA-Z_][a-zA-Z0-9_]*","=","\"(?:\\\\.|[^\"\\\\])*\""]},
     {"head": "INITIALISATION", "body": ["int","[a-zA-Z_][a-zA-Z0-9_]*","=","[+-]?[0-9]+"]},
 
     {"head": "INITIALISATION", "body": ["char","[a-zA-Z_][a-zA-Z0-9_]*","=","'(?:\\.|[^\\'])'"]},
