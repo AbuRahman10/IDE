@@ -26,7 +26,7 @@ private slots:
     void inputtest();
     void consoletest();
     void onButtonClicked();
-    bool enterKey(QTextEdit *editor, QFrame *frame);
+    bool keyEnterBackspace();
     void simulateRunButtonClick();
     void clearALL(QPushButton* clearButton);
     void settings();
@@ -34,11 +34,11 @@ private slots:
     void open();
 private:
     Ui::MainWindow *ui;
-    vector<QTextEdit*> editors;
-    vector<QFrame*> frames;
+    int counter;
     QTimer* timer;
     SLR parser;
     CFG cfg;
-    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false","++","--"};
+    QVector<QChar> escapeCharacters = {'\n', '\t', '\a', '\v'};
+    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false"};
 };
 #endif // MAINWINDOW_H

@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include "QDebug"
 #include "QKeyEvent"
+#include <QScrollBar>
+#include <QChar>
 
 using namespace std;
 
@@ -22,35 +24,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ///////// FRAME /////////
-    frames.push_back(ui->frame);
-    frames.push_back(ui->frame_2);
-    frames.push_back(ui->frame_3);
-    frames.push_back(ui->frame_4);
-    frames.push_back(ui->frame_5);
-    frames.push_back(ui->frame_6);
-    frames.push_back(ui->frame_7);
-    frames.push_back(ui->frame_8);
-    frames.push_back(ui->frame_9);
-    frames.push_back(ui->frame_10);
-    ///////// EDITORS /////////
-    editors.push_back(ui->editor);
-    editors.push_back(ui->editor_2);
-    editors.push_back(ui->editor_3);
-    editors.push_back(ui->editor_4);
-    editors.push_back(ui->editor_5);
-    editors.push_back(ui->editor_6);
-    editors.push_back(ui->editor_7);
-    editors.push_back(ui->editor_8);
-    editors.push_back(ui->editor_9);
-    editors.push_back(ui->editor_10);
     connect(ui->actionSettings, &QAction::triggered, this, &MainWindow::settings);
     connect(ui->actionSave_Project, &QAction::triggered, this, &MainWindow::save);
     connect(ui->actionOpen_Project, &QAction::triggered, this, &MainWindow::open);
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::consoletest);
+    connect(ui->RUN_2, &QPushButton::clicked, this, &MainWindow::consoletest);
     connect(ui->clearConsole, &QPushButton::clicked, [=]() {clearALL(ui->clearConsole);});
     connect(ui->clearInput, &QPushButton::clicked, [=]() {clearALL(ui->clearInput);});
     connect(ui->RUN, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+    connect(ui->RUN_2, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
     cfg = CFG("grammar.json");
     parser = cfg.createTable();
     ///////// LIVE EDITOR /////////
@@ -61,11 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("IDE");
     setWindowIcon(QIcon("logo.png"));
     this->setStyleSheet("background-color: #49006d;");
-    //////// NO HORIZONTAL SCROLLBARS ////////
-    for (QTextEdit* editor : editors)
-    {
-        editor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    }
 }
 
 MainWindow::~MainWindow()
@@ -76,211 +53,197 @@ MainWindow::~MainWindow()
 void MainWindow::simulateRunButtonClick()
 {
     //////// SAVING CURSOR LOCATION ////////
-    vector<int> originalCursors;
-    for (QTextEdit *editor : editors)
-    {
-        originalCursors.push_back(editor->textCursor().position());
-    }
+    int originalCursor;
+    originalCursor = ui->editor->textCursor().position();
     //////// INPUT CHECK ////////
     inputtest();
-    //////// ONLY ONE LINE ////////
-    for (int i = 0; i < editors.size(); ++i)
+    //////// LINE NUMBERS ////////
+    if (keyEnterBackspace())
     {
-        if (enterKey(editors[i], frames[i]))
-        {
-            originalCursors[i]--;
-        }
-        /////// SET ORIGINAL CURSOR LOCATION ///////
-        QTextCursor cursor = editors[i]->textCursor();
-        cursor.setPosition(originalCursors[i]);
-        editors[i]->setTextCursor(cursor);
+        originalCursor--;
     }
+    /////// SET ORIGINAL CURSOR LOCATION ///////
+    QTextCursor cursor = ui->editor->textCursor();
+    cursor.setPosition(originalCursor);
+    ui->editor->setTextCursor(cursor);
 }
 
 void MainWindow::onButtonClicked()
 {
     ui->RUN->setChecked(false);
+    ui->RUN_2->setChecked(false);
 }
 
 void MainWindow::inputtest()
 {
-    //////// INPUT AND CURSOR LOCATION ////////
-    vector<QString> Qinputs;
-    vector<string> inputs;
-    for (QTextEdit *editor : editors)
+    ///////// LEXER /////////
+    string inp = ui->editor->toPlainText().toStdString();
+    Lexer lexer(inp);
+    auto get_tokens = lexer.tokenize();
+    ///////// CFG AND PARSER /////////
+    bool accept = cfg.parse(get_tokens,parser);
+    ///////// ACCEPTER /////////
+    if (accept)  // juiste syntax
     {
-        QString Qinput = editor->toPlainText();
-        string input = Qinput.toStdString();
-        Qinputs.push_back(Qinput);
-        inputs.push_back(input);
-    }
-    for (int i = 0; i < 10; i++)
-    {
-        ///////// LEXER /////////
-        Lexer lexer(inputs[i]);
-        auto get_tokens = lexer.tokenize();
-        ///////// CFG AND PARSER /////////
-        bool accept = cfg.parse(get_tokens,parser);
-        ///////// ACCEPTER /////////
-        string inp = inputs[i];
-        if (accept)  // juiste syntax
+        ///////// FRAME /////////
+        if (inp == "")
         {
-            ///////// FRAME /////////
-            if (inp == "")
+            ui->frame->setStyleSheet("background-color: #49006d;");
+        }
+        else
+        {
+            ui->frame->setStyleSheet("background-color: green;");
+        }
+        ///////// COLOR /////////
+        bool stringPassed = false;
+        bool charPassed = false;
+        bool equalPassed = false;
+        QString type;
+        QString text = QString::fromStdString(inp);
+        QTextCursor cursor = ui->editor->textCursor();
+        QTextCharFormat format;
+        ui->editor->clear();
+        for (int charIndex = 0; charIndex < text.length(); ++charIndex)
+        {
+            const QChar character = text.at(charIndex);
+            type += character;
+            if (inp[0] == '/' and inp[1] == '/')
             {
-                frames[i]->setStyleSheet("background-color: #49006d;");
+                format.setForeground(Qt::gray);
+                cursor.insertText(character, format);
+                type.clear();
             }
-            else
+            else if (charIndex > 1 and (character == '\\' or text.at(charIndex-1) == '\\'))
             {
-                frames[i]->setStyleSheet("background-color: green;");
+                format.setForeground(Qt::green);
+                cursor.insertText(character, format);
             }
-            ///////// COLOR /////////
-            bool stringPassed = false;
-            bool charPassed = false;
-            bool equalPassed = false;
-            string type;
-            QString text = QString::fromStdString(inp);
-            QTextCursor cursor = editors[i]->textCursor();
-            QTextCharFormat format;
-            editors[i]->clear();
-            for (int charIndex = 0; charIndex < text.length(); ++charIndex)
+            else if (escapeCharacters.contains(character))
             {
-                type += inp[charIndex];
-                QString Qdatatype = QString::fromStdString(type);
-                const QChar character = text.at(charIndex);
-                if (inp[0] == '/' and inp[1] == '/')
+                cursor.insertText(character);
+                type.clear();
+            }
+            else if (typesNames.contains(type))
+            {
+                int datatypeSize = type.size() - 1;
+                int positionsToGoBack = charIndex - datatypeSize;
+                cursor.setPosition(charIndex);
+                cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+                ui->editor->setTextCursor(cursor);
+                format.setForeground(QColor("#FF46D2"));
+                cursor.insertText(type, format);
+                type.clear();
+                equalPassed = false;
+            }
+            else if (character == ' ' and (!stringPassed and !charPassed))
+            {
+                cursor.insertText(" ", format);
+                type.clear();
+            }
+            else if (character == '=' and (!stringPassed and !charPassed))
+            {
+                format.setForeground(Qt::green);
+                cursor.insertText("=", format);
+                equalPassed = true;
+            }
+            else if (character == ';' and (!stringPassed and !charPassed))
+            {
+                format.setForeground(QColor("#00FFF3"));
+                cursor.insertText(";", format);
+                type.clear();
+                equalPassed = false;
+            }
+            else if (character == '\"' and !charPassed)
+            {
+                format.setForeground(QColor("#FF6100"));
+                cursor.insertText(character, format);
+                if (!stringPassed)
                 {
-                    format.setForeground(Qt::gray);
-                    cursor.insertText(character, format);
-                    type.clear();
-                }
-                else if (charIndex > 1 and (character == '\\' or text.at(charIndex-1) == '\\'))
-                {
-                    format.setForeground(Qt::green);
-                    cursor.insertText(character, format);
-                }
-                else if (typesNames.contains(QString::fromStdString(type)))
-                {
-                    int datatypeSize = type.size() - 1;
-                    int positionsToGoBack = charIndex - datatypeSize;
-                    cursor.setPosition(charIndex);
-                    cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
-                    cursor.removeSelectedText();
-                    editors[i]->setTextCursor(cursor);
-                    format.setForeground(QColor("#FF46D2"));
-                    cursor.insertText(Qdatatype, format);
-                    type.clear();
-                    equalPassed = false;
-                }
-                else if (character == ' ' and (!stringPassed and !charPassed))
-                {
-                    cursor.insertText(" ", format);
-                    type.clear();
-                }
-                else if (character == '=' and (!stringPassed and !charPassed))
-                {
-                    format.setForeground(Qt::green);
-                    cursor.insertText("=", format);
-                    equalPassed = true;
-                }
-                else if (character == ';' and (!stringPassed and !charPassed))
-                {
-                    format.setForeground(QColor("#00FFF3"));
-                    cursor.insertText(";", format);
-                    type.clear();
-                    equalPassed = false;
-                }
-                else if (character == '\"' and !charPassed)
-                {
-                    format.setForeground(QColor("#FF6100"));
-                    cursor.insertText(character, format);
-                    if (!stringPassed)
-                    {
-                        stringPassed = true;
-                    }
-                    else
-                    {
-                        stringPassed = false;
-                    }
-                }
-                else if (character == '\'' and !stringPassed)
-                {
-                    format.setForeground(QColor("#FF6100"));
-                    cursor.insertText(character, format);
-                    if (!charPassed)
-                    {
-                        charPassed = true;
-                    }
-                    else
-                    {
-                        charPassed = false;
-                    }
-                }
-                else if ((character == '<' or character == '>') and (!stringPassed and !charPassed))
-                {
-                    format.setForeground(Qt::red);
-                    cursor.insertText(character, format);
-                    type.clear();
-                }
-                else if ((character == '(' or character == ')') and (!stringPassed and !charPassed))
-                {
-                    format.setForeground(Qt::white);
-                    cursor.insertText(character, format);
-                    type.clear();
-                }
-                else if (character == '{' or character == '}' and (!stringPassed and !charPassed))
-                {
-                    format.setForeground(QColor("#0051FF"));
-                    cursor.insertText(character, format);
-                    type.clear();
+                    stringPassed = true;
                 }
                 else
                 {
-                    if (stringPassed or charPassed)
-                    {
-                        format.setForeground(QColor("#FBFF00"));
-                        cursor.insertText(character, format);
-                    }
-                    else if (isdigit(inp[charIndex]) and equalPassed and !stringPassed)
-                    {
-                        format.setForeground(QColor("#A951FB"));
-                        cursor.insertText(character, format);
-                    }
-                    else
-                    {
-                        format.setForeground(QColor("#d2a523"));
-                        cursor.insertText(character, format);
-                    }
+                    stringPassed = false;
                 }
             }
-        }
-        else // foute syntax
-        {
-            ///////// FRAME /////////
-            if (inp == "")
+            else if (character == '\'' and !stringPassed)
             {
-                frames[i]->setStyleSheet("background-color: #49006d;");
+                format.setForeground(QColor("#FF6100"));
+                cursor.insertText(character, format);
+                if (!charPassed)
+                {
+                    charPassed = true;
+                }
+                else
+                {
+                    charPassed = false;
+                }
+            }
+            else if ((character == '<' or character == '>') and (!stringPassed and !charPassed))
+            {
+                format.setForeground(Qt::red);
+                cursor.insertText(character, format);
+                type.clear();
+            }
+            else if ((character == '(' or character == ')') and (!stringPassed and !charPassed))
+            {
+                format.setForeground(Qt::white);
+                cursor.insertText(character, format);
+                type.clear();
+            }
+            else if ((character == '{' or character == '}') and (!stringPassed and !charPassed))
+            {
+                format.setForeground(QColor("#0051FF"));
+                cursor.insertText(character, format);
+                type.clear();
             }
             else
             {
-                frames[i]->setStyleSheet("background-color: red;");
+                if (stringPassed or charPassed)
+                {
+                    format.setForeground(QColor("#FBFF00"));
+                    cursor.insertText(character, format);
+                }
+                else if (character.isDigit() and equalPassed and !stringPassed)
+                {
+                    format.setForeground(QColor("#A951FB"));
+                    cursor.insertText(character, format);
+                }
+                else
+                {
+                    format.setForeground(QColor("#d2a523"));
+                    cursor.insertText(character, format);
+                }
             }
-            ///////// EDITOR /////////
-            QTextDocument* document = new QTextDocument(this);
-            QTextCursor cursor(document);
-            cursor.insertText(Qinputs[i]);
-            // wavy underline
-            QTextCharFormat format;
-            format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
-            format.setUnderlineColor(Qt::red);
-            cursor.setPosition(0); // Move cursor to the beginning
-            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor); // Select the entire text
-            cursor.mergeCharFormat(format); // Apply formatting to the selected text
-            editors[i]->setDocument(document);
-            // changing font
-            QString styleSheet = "QTextEdit {font-family: 'Fira Code', monospace;font-size: 17px; line-height: 1.5; background-color: #282a36; color: #ba8602; }";
-            editors[i]->setStyleSheet(styleSheet);
         }
+    }
+    else // foute syntax
+    {
+        ///////// FRAME /////////
+        if (inp == "")
+        {
+            ui->frame->setStyleSheet("background-color: #49006d;");
+        }
+        else
+        {
+            ui->frame->setStyleSheet("background-color: red;");
+        }
+        ///////// EDITOR /////////
+        QTextDocument* document = new QTextDocument(this);
+        QTextCursor cursor(document);
+        cursor.insertText(ui->editor->toPlainText());
+        // wavy underline
+        QTextCharFormat format;
+        format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+        format.setUnderlineColor(Qt::red);
+        cursor.setPosition(0); // Move cursor to the beginning
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor); // Select the entire text
+        cursor.mergeCharFormat(format); // Apply formatting to the selected text
+        ui->editor->setDocument(document);
+        // changing font
+        QString styleSheet = "QTextEdit {font-family: 'Fira Code', monospace;font-size: 17px; line-height: 1.5; background-color: #282a36; color: #ba8602; }";
+        ui->editor->setStyleSheet(styleSheet);
     }
 }
 
@@ -290,80 +253,94 @@ void MainWindow::consoletest()
     QString exit0 = "Process finished with exit code 0";
     QString exit1 = "Process finished with exit code 1";
     QString execution = "Executing your program...\n";
-    // INPUT
-    vector<QString> Qinputs;
-    vector<string> inputs;
-    for (QTextEdit *editor : editors)
-    {
-        QString Qinput = editor->toPlainText();
-        string input = Qinput.toStdString();
-        Qinputs.push_back(Qinput);
-        inputs.push_back(input);
-    }
     ui->console->clear();
     ui->console->insertPlainText(execution);
-    for (int i = 0; i < 10; i++)
+    string inp = ui->editor->toPlainText().toStdString();
+    ///////// LEXER /////////
+    Lexer lexer(inp);
+    auto get_tokens = lexer.tokenize();
+    ///////// CFG AND PARSER /////////
+    bool accept = cfg.parse(get_tokens,parser);
+    ///////// ACCEPTER /////////
+    if (accept)  // juiste syntax
     {
-        string inp = inputs[i];
-        ///////// LEXER /////////
-        Lexer lexer(inputs[i]);
-        auto get_tokens = lexer.tokenize();
-        ///////// CFG AND PARSER /////////
-        bool accept = cfg.parse(get_tokens,parser);
-        ///////// ACCEPTER /////////
-        if (accept)  // juiste syntax
-        {
-            ///////// CONSOLE /////////
-            QString exit0Line = exit0 + " for line: " + QString::fromStdString(to_string(i + 1)) + "\n";
-            ui->console->insertPlainText(exit0Line);
-        }
-        else // foute syntax
-        {
-            ///////// CONSOLE /////////
-            QString exit1Line = exit1 + " for line: " + QString::fromStdString(to_string(i + 1)) + "\n";
-            ui->console->insertPlainText(exit1Line);
-        }
+        ///////// CONSOLE /////////
+        QString exit0Line = exit0;
+        ui->console->insertPlainText(exit0Line);
+    }
+    else // foute syntax
+    {
+        ///////// CONSOLE /////////
+        QString exit1Line = exit1;
+        ui->console->insertPlainText(exit1Line);
     }
 }
 
-bool MainWindow::enterKey(QTextEdit *editor, QFrame *frame)
+bool MainWindow::keyEnterBackspace()
 {
     bool newLine = false;
-    QString qin = editor->toPlainText();
+    bool maxReached = false;
+    QString qin = ui->editor->toPlainText();
     string in = qin.toStdString();
+    counter = 1;
     string newInput;
     for (char ch : in)
     {
         if (ch == '\n')
         {
+            counter++;
             newLine = true;
+        }
+        if (counter > 22)
+        {
+            maxReached = true;
+            if (ch != '\n')
+            {
+                newInput += ch;
+            }
         }
         else
         {
             newInput += ch;
         }
     }
+    if (!newLine)
+    {
+        ui->editor_11->clear();
+        ui->editor_11->insertPlainText(QString::fromStdString("  "+ to_string(1)));
+    }
     if (newLine)
     {
-        editor->clear();
-        frame->setStyleSheet("background-color: green;");
-        editor->insertPlainText(QString::fromStdString(newInput));
+        ui->editor_11->clear();
+        ui->editor_11->insertPlainText(QString::fromStdString("  "+ to_string(1)));
+        for (int i = 2; i <= counter; i++)
+        {
+            string lineNumber;
+            if (i < 10 and i >= 0)
+            {
+                lineNumber = "\n  " + to_string(i);
+            }
+            else
+            {
+                lineNumber = "\n " + to_string(i);
+            }
+            ui->editor_11->insertPlainText(QString::fromStdString(lineNumber));
+        }
     }
-    return newLine;
+    if (maxReached)
+    {
+        ui->editor->clear();
+        ui->editor->insertPlainText(QString::fromStdString(newInput));
+    }
+    return maxReached;
 }
 
 void MainWindow::clearALL(QPushButton *clearButton)
 {
     if (clearButton->objectName().toStdString() == "clearInput")
     {
-        for (QTextEdit *editor : editors)
-        {
-            editor->clear();
-        }
-        for (QFrame *frame : frames)
-        {
-            frame->setStyleSheet("background-color: #49006d;");
-        }
+        ui->editor->clear();
+        ui->frame->setStyleSheet("background-color: #49006d;");
     }
     else if (clearButton->objectName().toStdString() == "clearConsole")
     {
@@ -405,25 +382,16 @@ void MainWindow::settings()
 void MainWindow::save()
 {
     ofstream file("SavedFile.txt");
-    for (QTextEdit *editor : editors)
-    {
-        file << editor->toPlainText().toStdString() << endl;
-    }
+    file << ui->editor->toPlainText().toStdString() << endl;
     file.close();
 }
 
 void MainWindow::open()
 {
     ifstream file("SavedFile.txt");
-    if (file.is_open())
-    {
-        for (QTextEdit* editor : editors)
-        {
-            std::string line;
-            std::getline(file, line);
-            editor->setPlainText(QString::fromStdString(line));
-        }
-        file.close();
-    }
+    stringstream buffer;
+    buffer << file.rdbuf();
+    string fileContent = buffer.str();
+    ui->editor->setPlainText(QString::fromStdString(fileContent));
     message("The most recent saved file has been opened!         ");
 }
