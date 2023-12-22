@@ -292,6 +292,7 @@ std::vector<std::vector<Token>> Lexer::tokenize() noexcept {
         return tokens;
     }*/
     if(!tokens.empty()){
+        pos_dollar.push_back(0);
         statements.push_back(tokens);
     }
     return statements;

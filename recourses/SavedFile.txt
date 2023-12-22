@@ -1,1 +1,6 @@
-inti i = 0;
+while(true){
+    if(true){
+        int  = 0;
+    }
+
+}
