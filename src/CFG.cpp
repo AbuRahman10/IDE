@@ -114,6 +114,7 @@ vector<tuple<std::string, int, bool>> CFG::parse(vector<vector<Token>> &token, S
         // has to be raw cuz of escape sequence
         regex ch("'(?:\\.|[^\\'])'");
         regex ch1("'[0-9]+'");
+        int last_pos = 0;
         for (const Token& t : token[i])
         {
             string checking_token = t.word;
@@ -206,8 +207,9 @@ vector<tuple<std::string, int, bool>> CFG::parse(vector<vector<Token>> &token, S
                 input.emplace_back(t.word,t.pos);
                 stack_input.emplace_back("'(?:\\.|[^\\'])'");
             }
+            last_pos = t.pos;
         }
-        input.emplace_back("$",0);
+        input.emplace_back("$",last_pos+1);
         input_size.push_back(lex.pos_dollar[i]);
         pair<vector<string>,vector<string>> stack_value = {{"0"},stack_input};
         accept.push_back(parser.slr_parsing(input,stack_value));

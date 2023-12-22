@@ -44,6 +44,11 @@ int main() {
             column++;
         }
     }
+    for (int i = 0; i < errors.size(); i++) {
+        if (errors[i] >= code.size()) {
+            std::cout << "(" << row+1 << "," << column+1 << ")" << std::endl;
+        }
+    }
 
     return 0;
 }
