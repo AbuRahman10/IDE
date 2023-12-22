@@ -65,7 +65,7 @@ public:
 
     set<string> firstOfString(const vector<string> &beta);
 
-    bool slr_parsing(vector<string> &input, pair<vector<string>,vector<string>> &stack_value);
+    std::pair<std::pair<std::string,int>,bool> slr_parsing(vector<std::pair<std::string,int>> &input, pair<vector<string>,vector<string>> &stack_value);
 };
 
 

@@ -12,6 +12,7 @@ Token Lexer::lexNumber() {
     // Handle negative numbers
     if (code[char_pointer] == '-' && isdigit(code[char_pointer + 1])) {
         number += code[char_pointer++]; // Add '-' to number
+        this->column++;
     }
 
     // Identify the decimal point
@@ -20,16 +21,20 @@ Token Lexer::lexNumber() {
             hasDecimalPoint = true; // Decimal point in the number
         }
         number += code[char_pointer++];
+        this->column++;
     }
 
     // Handling the exponent part (e.g., 2.3e-4)
     if (tolower(code[char_pointer]) == 'e') {
         number += code[char_pointer++]; // Add 'e' or 'E'
+        this->column++;
         if (code[char_pointer] == '+' || code[char_pointer] == '-') {
-            number += code[char_pointer++]; // Add sign of exponent if present
+            number += code[char_pointer++];
+            this->column++;// Add sign of exponent if present
         }
         while (isdigit(code[char_pointer])) {
             number += code[char_pointer++];
+            this->column++;
         }
     }
 
@@ -39,18 +44,21 @@ Token Lexer::lexNumber() {
         // get the whole word out
         while (isalnum(code[char_pointer]) || code[char_pointer] == '_') {
             declarationName += code[char_pointer++];
+            this->column++;
         }
-        return {Token::DECLARATION_NAME, declarationName, this->line, this->column};
+        return {Token::DECLARATION_NAME, declarationName, this->line, this->column, this->char_pointer};
         }
-    return {Token::VALUE,number,this->line,this->column};
+    return {Token::VALUE,number,this->line,this->column, this->char_pointer};
 }
 
 Token Lexer::lexString() {
     std::string str;
-    str += code[char_pointer++]; // Add opening quote
+    str += code[char_pointer++];
+    this->column++;// Add opening quote
     while (char_pointer < code.length() && code[char_pointer] != '\"') {
         if (code[char_pointer] == '\\') { // Check for escape character
             char_pointer++; // Move to the character after the backslash
+            this->column++;
             if (char_pointer < code.length()) {
                 // Handle common escape sequences
                 switch (code[char_pointer]) {
@@ -77,34 +85,39 @@ Token Lexer::lexString() {
                     default: str += code[char_pointer]; // niet gewenste chars as escape sequence
                 }
             } else {
-                return {Token::ERROR, "Incomplete escape sequence",this->line,this->column};
+                return {Token::ERROR, "Incomplete escape sequence",this->line,this->column, this->char_pointer};
             }
         } else {
             str += code[char_pointer];
         }
         char_pointer++;
+        this->column++;
     }
 
     if (char_pointer < code.length() && code[char_pointer] == '\"') {
         str += code[char_pointer++];
-        return {Token::VALUE, str,this->line,this->column};
+        this->column++;
+        return {Token::VALUE, str,this->line,this->column, this->char_pointer};
     } else {
-        return {Token::ERROR, "Unclosed string literal",this->line,this->column};
+        return {Token::ERROR, "Unclosed string literal",this->line,this->column, this->char_pointer};
     }
 }
 
 Token Lexer::lexCharacter() {
     std::string character;
-    character += code[char_pointer++]; // Add opening quote
+    character += code[char_pointer++];
+    this->column++;// Add opening quote
     while (char_pointer < code.length() && code[char_pointer] != '\'') {
         character += code[char_pointer++];
+        this->column++;
     }
     character += code[char_pointer++]; // Add closing quote
+    this->column++;
 
     if (character[character.length()-1] != '\''){
-        return {Token::ERROR,"Unclosed char!",this->line,this->column};
+        return {Token::ERROR,"Unclosed char!",this->line,this->column,this->char_pointer};
     }
-    return {Token::VALUE, character,this->line,this->column};
+    return {Token::VALUE, character,this->line,this->column,this->char_pointer};
 }
 
 Token Lexer::lexOperatorOrPunctuation() {
@@ -114,10 +127,12 @@ Token Lexer::lexOperatorOrPunctuation() {
     // Check for minus sign before a number (this is for signed integers!!!!)
     if (current == '-' && isdigit(code[char_pointer + 1])) {
         char_pointer++;
+        this->column++;
         return lexNumber();
     }
 
     char_pointer++; // Increment char_pointer after the check
+    this->column++;
 
     // Check for multi-character operators
     if (char_pointer < code.length()) {
@@ -129,6 +144,7 @@ Token Lexer::lexOperatorOrPunctuation() {
             (current == '+' || current == '-' || current == '*' || current == '/' && next == '=')) {
             tokenValue += next;
             char_pointer++; // Consume the next character as well
+            this->column++;
         }
     }
 
@@ -136,25 +152,29 @@ Token Lexer::lexOperatorOrPunctuation() {
     if (tokenValue == "<=" || tokenValue == ">=" || tokenValue == "&&" || tokenValue == "||" ||
         tokenValue == "<<" || tokenValue == ">>" || tokenValue == "+=" || tokenValue == "-=" ||
         tokenValue == "*=" || tokenValue == "/=") {
-        return {Token::OPERATOR, tokenValue, this->line, this->column};
+        return {Token::OPERATOR, tokenValue, this->line, this->column, this->char_pointer};
     } else if (tokenValue == ";" || tokenValue == "," || tokenValue == ".") {
-        return {Token::PUNCTUATION, tokenValue, this->line, this->column};
+        return {Token::PUNCTUATION, tokenValue, this->line, this->column, this->char_pointer};
     } else if (tokenValue == "(" || tokenValue == ")") {
-        return {Token::BRACKETS, tokenValue, this->line, this->column};
+        return {Token::BRACKETS, tokenValue, this->line, this->column, this->char_pointer};
     } else if (tokenValue == "{" || tokenValue == "}") {
         //parenthesis stack
         if(tokenValue == "{") {parenthesis.push('{');}
         else{
-            parenthesis.pop();
+            if(!parenthesis.empty()){
+                parenthesis.pop();
+            }
             int savedCharPointer = char_pointer;
             // tussenin kunnen er white spaces zijn dus skip
             while (isspace(code[char_pointer])) {
                 char_pointer++;
+                this->column++;
             }
             // Check if 'if' comes after 'else'
             std::string getnextWord;
             while (isalnum(code[char_pointer])) {
                 getnextWord += code[char_pointer++];
+                this->column++;
             }
             if (getnextWord == "else" && if_exits) {
                 // 'else if' herkend door onze lexer
@@ -165,12 +185,12 @@ Token Lexer::lexOperatorOrPunctuation() {
                 char_pointer = savedCharPointer;
             }
         }
-        return {Token::PARENTHESIS, tokenValue, this->line, this->column};
+        return {Token::PARENTHESIS, tokenValue, this->line, this->column, this->char_pointer};
     }else if(tokenValue == "[" || tokenValue == "]"){
-        return {Token::SQUARE_BRACKETS,tokenValue,this->line,this->column};
+        return {Token::SQUARE_BRACKETS,tokenValue,this->line,this->column, this->char_pointer};
     }
     else {
-        return {Token::OPERATOR, tokenValue, this->line, this->column}; // Single char operator
+        return {Token::OPERATOR, tokenValue, this->line, this->column, this->char_pointer}; // Single char operator
     }
 }
 
@@ -203,23 +223,24 @@ Token Lexer::lexIdentifierOrKeyword() {
     std::string identifier;
     while (isalnum(code[char_pointer]) || code[char_pointer] == '_') {
         identifier += code[char_pointer++];
+        this->column++;
     }
     // datatype
     if (isKeyword(identifier)) {
-        return {Token::DATATYPE, identifier, this->line, this->column};
+        return {Token::DATATYPE, identifier, this->line, this->column, this->char_pointer};
     }
         // values
     else if (identifier == "true" || identifier == "false") {
-        return {Token::VALUE, identifier, this->line, this->column};
+        return {Token::VALUE, identifier, this->line, this->column, this->char_pointer} ;
     }
         // loops and control-statement
     else if (identifier == "while" || identifier == "if" || identifier == "else") {
         if(identifier == "if"){if_exits = true;}
-        return {Token::KEYWORD, identifier, this->line, this->column};
+        return {Token::KEYWORD, identifier, this->line, this->column, this->char_pointer};
     }
         // variable name
     else {
-        return {Token::DECLARATION_NAME, identifier, this->line, this->column};
+        return {Token::DECLARATION_NAME, identifier, this->line, this->column, this->char_pointer};
     }
 }
 
@@ -243,31 +264,25 @@ std::vector<std::vector<Token>> Lexer::tokenize() noexcept {
             }
         } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '/') {
             skipSingleLineComment();
-            this->column++;
             // multiline comments
         } else if (char_pointer + 1 < code.length() && code[char_pointer] == '/' && code[char_pointer + 1] == '*') {
             skipMultiLineComment();
-            this->column++;
         } else if (isdigit(current)) {
             tokens.push_back(lexNumber());
-            this->column++;
         } else if (current == '\"') {
             tokens.push_back(lexString());
-            this->column++;
         } else if (current == '\'') {
             tokens.push_back(lexCharacter());
-            this->column++;
         } else if (isalpha(current) || current == '_') {
             tokens.push_back(lexIdentifierOrKeyword());
-            this->column++;
         } else {
             Token t = lexOperatorOrPunctuation();
             tokens.push_back(t);
             if(((t.word == ";" && parenthesis.empty()) || (t.word == "}" && parenthesis.empty())) && !else_if_exits){
+                pos_dollar.push_back(this->char_pointer);
                 statements.push_back(tokens);
                 tokens.clear();
             }
-            this->column++;
         }
     }
     /*tokens.emplace_back(Token::END_OF_FILE, "<EOS>",this->line,this->column);

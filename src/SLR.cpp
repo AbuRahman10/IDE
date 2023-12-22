@@ -269,21 +269,28 @@ int SLR::shift_check(const pair<production,int>& rule_to_check) {
 
 
 
-bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> &stack_value) {
+std::pair<std::pair<std::string,int>,bool> SLR::slr_parsing(vector<std::pair<std::string,int>> &input,pair<vector<string>,vector<string>> &stack_value) {
 
     static bool accept = false;
-    string ss = input[0];
+    string ss = input[0].first;
     string action = parsing_table[stoi(stack_value.first[stack_value.first.size()-1])].first[ss];
+    static std::pair<std::pair<string,int>,bool> returnvalue;
 
     if (action == "accept") {
         if(input.size() > 1){
             accept = false;
+            if(ss != "$"){
+                returnvalue = {{ss,input[0].second},accept};
+            } else{
+                returnvalue = {{"",input[0].second},accept};
+            }
         }else{
             accept = true;
+            returnvalue = {{ss,input[0].second},accept};
         }
     }
     if (action[0] == 's') {
-        stack_value.first.push_back(*input.begin());
+        stack_value.first.push_back(input.begin()->first);
         string temp;
         for (int i = 1; i < action.size(); i++) {
             temp += action[i];
@@ -311,8 +318,13 @@ bool SLR::slr_parsing(vector<string> &input,pair<vector<string>,vector<string>> 
     }
     if (action.empty() or action == "0") {
         accept = false;
+        if(ss != "$"){
+            returnvalue = {{ss,input[0].second},accept};
+        } else{
+            returnvalue = {{"",input[0].second},accept};
+        }
     }
-    return accept;
+    return returnvalue;
 }
 
 void SLR::createFirst(const string& symbol) {

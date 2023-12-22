@@ -12,7 +12,7 @@
 #include "fstream"
 #include "Lexer.h"
 #include "regex"
-
+#include "map"
 class SLR;
 using json = nlohmann::json;
 using namespace std;
@@ -24,8 +24,11 @@ private:
     std::vector<std::pair<std::string,std::vector<std::string>>> productions;
     std::string startSymbol;
     json j;
+    Lexer lex;
 public:
     CFG(const std::string& filename);
+
+    void setLex(const Lexer &lex);
 
     CFG() = default;
 
@@ -47,7 +50,7 @@ public:
 
     void print();
 
-    bool parse(vector<vector<Token>> &token, SLR &parser);
+    vector<tuple<std::string, int, bool>> parse(vector<vector<Token>> &token, SLR &parser);
 
     SLR createTable();
 };
