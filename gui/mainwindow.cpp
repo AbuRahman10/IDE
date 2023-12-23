@@ -371,7 +371,7 @@ void MainWindow::consoletest()
             auto it = ::find(errors.begin(),errors.end(),i);
             if(it != errors.end())
             {
-                string errorLines = "Error found at row: " + to_string(row+1) + " and position: " + to_string(column) + "\n";
+                string errorLines = "Error found at line: " + to_string(row+1) + " and position: " + to_string(column) + "\n";
                 QTextCharFormat format;
                 QTextCursor cursor = ui->console->textCursor();
                 format.setForeground(Qt::red);
@@ -391,7 +391,7 @@ void MainWindow::consoletest()
         {
             if (errors[i] >= inp.size())
             {
-                string errorLines = "Error found at row: " + to_string(row+1) + " and position: " + to_string(column+1) + "\n";
+                string errorLines = "Error found at line: " + to_string(row+1) + " and position: " + to_string(column+1) + "\n";
                 QTextCharFormat format;
                 QTextCursor cursor = ui->console->textCursor();
                 format.setForeground(Qt::red);
