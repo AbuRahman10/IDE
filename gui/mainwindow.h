@@ -28,6 +28,7 @@ private slots:
     void onButtonClicked();
     bool keyEnterBackspace();
     void simulateRunButtonClick();
+    void updateLineNumber();
     void clearALL(QPushButton* clearButton);
     void settings();
     void save();
@@ -38,6 +39,7 @@ private:
     QTimer* timer;
     SLR parser;
     CFG cfg;
+    Lexer lexer;
     QVector<QChar> escapeCharacters = {'\n', '\t', '\a', '\v'};
     QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false"};
 };

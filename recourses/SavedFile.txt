@@ -1,1 +1,19 @@
-int
+int main()
+{
+    int i = 0;
+    while (i < 10) {
+        if (i % 2 == 0) {
+            std::cout << "Even: " << i << std::endl;
+        } else {
+            std::cout << "Odd: " << i << std::endl;
+        }
+        i++;
+    }
+
+    for (int j = 0; j < 5; j++) {
+        std::cout << "Loop iteration: " << j << std::endl;
+    }
+
+    return 0;
+}
+
