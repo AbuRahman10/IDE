@@ -134,11 +134,12 @@ void MainWindow::inputtest()
         QString Qkar = character;
         string kar = Qkar.toStdString();
         type += character;
-        vector<int>::iterator it = std::find(errors.begin(), errors.end(), charIndex);
+        auto it = ::find(errors.begin(), errors.end(), charIndex);
         bool found = (it != errors.end());
         if (found)
         {
             format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+            format.setForeground(QColor("#d2a523"));
             format.setUnderlineColor(Qt::red);
             cursor.insertText(character,format);
         }
@@ -214,16 +215,14 @@ void MainWindow::inputtest()
             cursor.insertText(character);
             type.clear();
         }
-        else if (typesNames.contains(type))
+        else if (typesNames.contains(type) and correctCondition(text,charIndex))
         {
             int datatypeSize = type.size() - 1;
             int positionsToGoBack = charIndex - datatypeSize;
-            /////////////////////////////////////////////////////////////////////////
             cursor.setPosition(charIndex);
             cursor.setPosition(positionsToGoBack, QTextCursor::KeepAnchor);
             cursor.removeSelectedText();
             ui->editor->setTextCursor(cursor);
-            /////////////////////////////////////////////////////////////////////////
             format.setForeground(QColor("#FF46D2"));
             cursor.insertText(type, format);
             format.setForeground(QColor("#d2a523"));
@@ -550,4 +549,14 @@ void MainWindow::updateLineNumber()
             ui->editor_11->insertPlainText(QString::fromStdString(lineNumber));
         }
     }
+}
+
+bool MainWindow::correctCondition(QString text, int charIndex)
+{
+    QVector<QChar> symbols = {'>','<','{','}',' ','(',')'};
+    if ((charIndex + 1 < text.size()) and symbols.contains(text.at(charIndex+1)))
+    {
+        return true;
+    }
+    return false;
 }

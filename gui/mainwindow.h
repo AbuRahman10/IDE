@@ -33,6 +33,7 @@ private slots:
     void settings();
     void save();
     void open();
+    bool correctCondition(QString text, int charIndex);
 private:
     Ui::MainWindow *ui;
     int counter;
@@ -41,6 +42,6 @@ private:
     CFG cfg;
     Lexer lexer;
     QVector<QChar> escapeCharacters = {'\n', '\t', '\a', '\v'};
-    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "for", "if", "else", "while", "true", "false"};
+    QVector<QString> typesNames = {"string", "bool", "int", "char", "vector", "set", "if", "else", "while", "true", "false"};
 };
 #endif // MAINWINDOW_H
