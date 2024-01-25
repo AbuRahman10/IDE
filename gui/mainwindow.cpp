@@ -96,7 +96,7 @@ void MainWindow::inputtest()
         if(!get<2>(i))
         {
             errorFound = true;
-            errors.push_back(get<1>(i)-2);
+            errors.push_back(get<1>(i)-1);
         }
     }
     ///////// ACCEPTER /////////
@@ -184,6 +184,17 @@ void MainWindow::inputtest()
                 type.clear();
             }
         }
+        else if (escapeCharacters.contains(character) and !stringPassed)
+        {
+            cursor.insertText(character);
+            if (character == '\n')
+            {
+                format.setForeground(QColor("#d2a523"));
+                singleLineComment = false;
+                commentBegin.clear();
+            }
+            type.clear();
+        }
         else if (singleLineComment or multiLineComment)
         {
             format.setForeground(Qt::gray);
@@ -210,11 +221,6 @@ void MainWindow::inputtest()
             format.setForeground(Qt::green);
             cursor.insertText(character, format);
         }
-        else if (escapeCharacters.contains(character) and !stringPassed)
-        {
-            cursor.insertText(character);
-            type.clear();
-        }
         else if (typesNames.contains(type) and correctCondition(text,charIndex))
         {
             int datatypeSize = type.size() - 1;
@@ -239,6 +245,7 @@ void MainWindow::inputtest()
             format.setForeground(Qt::green);
             cursor.insertText("=", format);
             format.setForeground(QColor("#d2a523"));
+            type.clear();
             equalPassed = true;
         }
         else if (character == ';' and (!stringPassed and !charPassed))
@@ -316,12 +323,7 @@ void MainWindow::inputtest()
                 cursor.insertText(character, format);
             }
         }
-        if (character == '\n')
-        {
-            format.setForeground(QColor("#d2a523"));
-            singleLineComment = false;
-            type.clear();
-        }
+        // TODO: show error if it can't be shown one position further
     }
 }
 
@@ -553,7 +555,7 @@ void MainWindow::updateLineNumber()
 
 bool MainWindow::correctCondition(QString text, int charIndex)
 {
-    QVector<QChar> symbols = {'>','<','{','}',' ','(',')'};
+    QVector<QChar> symbols = {'>','<','{','}',' ','(',')',';'};
     if ((charIndex + 1 < text.size()) and symbols.contains(text.at(charIndex+1)))
     {
         return true;
